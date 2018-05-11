@@ -1,7 +1,9 @@
+#include "../private.h"
 #include "../script-data.h"
 #include <strips/io/io.h>
 #include <strips/modules.h>
 #include <strips/types.h>
+#include <strips/utils.h>
 #include <unistd.h>
 
 extern void duk_io_push_writer(duk_context *ctx);

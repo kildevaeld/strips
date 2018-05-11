@@ -15,8 +15,9 @@ set(SOURCES
 
     path/path.c
     exec/exec.c
+    prompt/prompt.c
 
 )
 
 add_library(strips ${SOURCES})
-target_link_libraries(strips csystem)
+target_link_libraries(strips csystem csystem_terminal)

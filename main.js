@@ -1,13 +1,9 @@
 const exec = require('exec'),
-    io = require('io')
+    io = require('io'),
+    prompt = require('prompt');
 
 
-console.log(exec.which('node'));
+prompt.list('Name:', ['choud', 'moud']);
 
-io.stdout.write("Hello, World: ");
-
-var out = io.stdin.read(10);
-console.log(out)
-//const out = exec('uglifyjs', __filename);
 
 //console.log(new TextDecoder().decode(out))

@@ -10,6 +10,7 @@
 #include <strips/utils.h>
 
 #include "path/path.h"
+#include "prompt/prompt.h"
 
 static duk_ret_t get_module_resolver(duk_context *ctx) {
   // duk_push_global_stash(ctx);
@@ -75,6 +76,7 @@ strips_ret_t strips_initialize(duk_context *ctx) {
   strips_set_module_resolver(ctx, "file", cjs_resolve_file, cjs_load_file);
 
   strips_path_init(ctx);
+  strips_prompt_init(ctx);
 
   return STRIPS_OK;
 }

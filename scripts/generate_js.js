@@ -14,9 +14,9 @@ fs.readdir(templatePath, function (fileName) {
 
     if (len == 0) return;
 
-    //const out = file.read(len);
+    const out = file.read(len);
 
-    const out = exec('uglifyjs', full);
+    //const out = exec('uglifyjs', full);
 
     fileData.push({
         file: full,
@@ -45,4 +45,4 @@ fileData.forEach(function (c) {
     out.push("static int " + base + "_js_len = " + c.buffer.length + ';\n');
 });;
 
-console.log(out.join('\n'));
+io.stdout.write(out.join('\n'));

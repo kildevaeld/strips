@@ -33,10 +33,16 @@ static duk_ret_t duk_io_file_dtor(duk_context *ctx) {
 
 static duk_ret_t duk_io_file_ctor(duk_context *ctx) {
   FILE *file = NULL;
-  const char *mode = duk_get_string_default(ctx, 1, "r+");
+
+  const char *mode = duk_get_string_default(ctx, 1, "r");
   if (duk_is_number(ctx, 0)) {
     int fd = duk_get_int(ctx, 0);
-    file = fdopen(fd, mode);
+
+    if (fd == STDOUT_FILENO || fd == STDERR_FILENO) {
+      file = fd == STDOUT_FILENO ? stdout : stderr;
+    } else {
+      file = fdopen(fd, "w+");
+    }
     duk_push_this(ctx);
     duk_dup(ctx, 0);
     duk_put_prop_string(ctx, -2, DUK_HIDDEN_SYMBOL("fd"));
