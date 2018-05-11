@@ -1,0 +1,71 @@
+#include "private.h"
+#include <strips/modules.h>
+
+strips_ret_t duk_module_add_fn(duk_context *ctx, const char *name,
+                               duk_c_function fn) {
+
+  if (!strips_get_entry(ctx, "modules")) {
+    return STRIPS_NOT_INITIALIZED;
+  }
+
+  if (duk_has_prop_string(ctx, -1, name)) {
+    duk_pop(ctx);
+    return STRIPS_DUPLICATE_MODULE;
+  }
+
+  duk_push_c_lightfunc(ctx, fn, 0, 0, 0);
+  duk_put_prop_string(ctx, -2, name);
+
+  duk_pop(ctx);
+
+  return STRIPS_OK;
+}
+
+strips_ret_t duk_module_add_str(duk_context *ctx, const char *name,
+                                const char *script) {
+  return duk_module_add_lstr(ctx, name, script, strlen(script));
+}
+
+strips_ret_t duk_module_add_lstr(duk_context *ctx, const char *name,
+                                 const char *buffer, duk_size_t len) {
+  if (!strips_get_entry(ctx, "modules")) {
+    return STRIPS_NOT_INITIALIZED;
+  }
+
+  if (duk_has_prop_string(ctx, -1, name)) {
+    duk_pop(ctx);
+    return STRIPS_DUPLICATE_MODULE;
+  }
+
+  duk_push_string(ctx,
+                  "(function(exports,require,module,__filename,__dirname){");
+
+  duk_push_string(ctx, (buffer[0] == '#' && buffer[1] == '!')
+                           ? "//"
+                           : "");     /* Shebang support. */
+  duk_push_lstring(ctx, buffer, len); /* source */
+  duk_push_string(
+      ctx,
+      "\n})"); /* Newline allows module last line to contain a // comment. */
+  duk_concat(ctx, 4);
+  duk_push_string(ctx, name); // filename
+  duk_compile(ctx, DUK_COMPILE_EVAL);
+  duk_call(ctx, 0);
+
+  duk_put_prop_string(ctx, -2, name);
+
+  duk_pop(ctx);
+
+  return STRIPS_OK;
+}
+
+duk_bool_t duk_module_has(duk_context *ctx, const char *name) {
+
+  if (!strips_get_entry(ctx, "modules")) {
+    return false;
+  }
+
+  bool ret = duk_has_prop_string(ctx, -1, name);
+  duk_pop(ctx);
+  return ret;
+}

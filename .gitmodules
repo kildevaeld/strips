@@ -1,0 +1,6 @@
+[submodule "vendor/unity/Unity"]
+	path = vendor/unity/Unity
+	url = git@github.com:ThrowTheSwitch/Unity.git
+[submodule "vendor/csystem"]
+	path = vendor/csystem
+	url = git@github.com:kildevaeld/csystem.git
