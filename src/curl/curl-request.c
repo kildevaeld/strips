@@ -1,10 +1,10 @@
 #include <curl/curl.h>
-#include <strips/curl/utils.h>
-#include <strips/io/io.h>
-#include <strips/utils.h>
-#include <strips/definitions.h>
 #include <duktape.h>
 #include <stdbool.h>
+#include <strips/curl/utils.h>
+#include <strips/definitions.h>
+#include <strips/io/io.h>
+#include <strips/utils.h>
 
 struct curl_bag {
   strips_bag_t *body;

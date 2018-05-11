@@ -48,7 +48,8 @@ end:
 int main(int argc, const char **argv) {
 
   if (argc == 1) {
-    fprintf(stderr, "usage: dukext <path>\n");
+    fprintf(stderr, "usage: strips <path>\n");
+    return 1;
   }
 
   return run_single(argv[1]);

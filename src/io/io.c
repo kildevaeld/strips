@@ -1,4 +1,4 @@
-//#include "../script-data.h"
+#include "../script-data.h"
 #include <strips/io/io.h>
 #include <strips/modules.h>
 #include <strips/types.h>
@@ -120,7 +120,8 @@ static duk_ret_t strips_io_module_init(duk_context *ctx) {
   duk_push_int(ctx, STDIN_FILENO);
   duk_new(ctx, 1);
   duk_put_prop_string(ctx, -2, "stdin");
-  /*duk_commonjs_wrapl(ctx, (const char *)io_js, io_js_len);
+
+  duk_commonjs_wrapl(ctx, (const char *)io_js, io_js_len);
   duk_dup(ctx, -2);
   duk_get_global_string(ctx, "require");
 
@@ -130,7 +131,7 @@ static duk_ret_t strips_io_module_init(duk_context *ctx) {
     duk_throw(ctx);
   }
 
-  duk_pop(ctx);*/
+  duk_pop(ctx);
 
   return 1;
 }
