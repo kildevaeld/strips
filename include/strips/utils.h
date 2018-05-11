@@ -8,4 +8,6 @@ int duk_ref(duk_context *ctx);
 void duk_push_ref(duk_context *ctx, int ref);
 void duk_unref(duk_context *ctx, int ref);
 
+void duk_commonjs_wrapl(duk_context *ctx, const char *buffer, size_t len);
+
 const char *duk_get_main(duk_context *ctx);

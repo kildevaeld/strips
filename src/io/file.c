@@ -1,6 +1,7 @@
+#include <stdio.h>
 #include <strips/io/io.h>
 #include <strips/utils.h>
-#include <stdio.h>
+#include <unistd.h>
 
 #define PUSH_FILE                                                              \
   duk_push_this(ctx);                                                          \
@@ -12,6 +13,15 @@
   duk_pop_2(ctx);
 
 static duk_ret_t duk_io_file_dtor(duk_context *ctx) {
+
+  if (duk_has_prop_string(ctx, 0, DUK_HIDDEN_SYMBOL("fd"))) {
+    duk_get_prop_string(ctx, 0, DUK_HIDDEN_SYMBOL("fd"));
+    int i = duk_get_int(ctx, -1);
+    if (i == STDOUT_FILENO || i == STDERR_FILENO) {
+      return 0;
+    }
+  }
+
   if (duk_has_prop_string(ctx, 0, DUK_HIDDEN_SYMBOL("FILE"))) {
     duk_get_prop_string(ctx, 0, DUK_HIDDEN_SYMBOL("FILE"));
     FILE *file = (FILE *)duk_get_pointer(ctx, -1);
@@ -22,10 +32,20 @@ static duk_ret_t duk_io_file_dtor(duk_context *ctx) {
 }
 
 static duk_ret_t duk_io_file_ctor(duk_context *ctx) {
+  FILE *file = NULL;
+  const char *mode = duk_get_string_default(ctx, 1, "r+");
+  if (duk_is_number(ctx, 0)) {
+    int fd = duk_get_int(ctx, 0);
+    file = fdopen(fd, mode);
+    duk_push_this(ctx);
+    duk_dup(ctx, 0);
+    duk_put_prop_string(ctx, -2, DUK_HIDDEN_SYMBOL("fd"));
+    duk_pop(ctx);
+  } else {
+    const char *path = duk_require_string(ctx, 0);
 
-  const char *path = duk_require_string(ctx, 0);
-  const char *mode = duk_require_string(ctx, 1);
-  FILE *file = fopen(path, mode);
+    file = fopen(path, mode);
+  }
 
   if (!file) {
     duk_type_error(ctx, "could not open file");

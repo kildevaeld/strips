@@ -224,7 +224,10 @@ static duk_int_t strips__eval_module_source(duk_context *ctx, void *udata) {
   (void)duk_get_prop_string(ctx, -4, "require");  /* require */
   duk_dup(ctx, -5);                               /* module */
   (void)duk_get_prop_string(ctx, -6, "filename"); /* __filename */
-  duk_push_undefined(ctx);                        /* __dirname */
+  const char *file = duk_get_string(ctx, -1);
+  int i = cs_path_dir(file);
+  duk_push_lstring(ctx, file, i);
+  // duk_push_undefined(ctx);                        /* __dirname */
   duk_call(ctx, 5);
 
   /* [ ... module source result(ignore) ] */

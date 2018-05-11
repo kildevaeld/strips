@@ -85,6 +85,27 @@ void duk_unref(duk_context *ctx, int ref) {
   duk_pop(ctx);
 }
 
+void duk_commonjs_wrapl(duk_context *ctx, const char *buffer, size_t len) {
+  duk_push_string(ctx,
+                  "(function(exports,require,module,__filename,__dirname){");
+
+  duk_push_string(ctx, (buffer[0] == '#' && buffer[1] == '!')
+                           ? "//"
+                           : "");     /* Shebang support. */
+  duk_push_lstring(ctx, buffer, len); /* source */
+  duk_push_string(
+      ctx,
+      "\n})"); /* Newline allows module last line to contain a // comment. */
+  duk_concat(ctx, 4);
+  duk_push_string(ctx, "wrapped_fn"); // filename
+  duk_compile(ctx, DUK_COMPILE_EVAL);
+  duk_call(ctx, 0);
+
+  // duk_put_prop_string(ctx, -2, "wrapped_fn");
+
+  // duk_pop(ctx);
+}
+
 const char *duk_get_main(duk_context *ctx) {
   duk_push_global_stash(ctx);
   duk_get_prop_string(ctx, -1,

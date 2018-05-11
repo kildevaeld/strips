@@ -24,7 +24,11 @@ static duk_ret_t strips_fs_readdir(duk_context *ctx) {
 
     duk_dup(ctx, 1);
     duk_push_string(ctx, de->d_name);
-    duk_pcall(ctx, 1);
+    duk_ret_t ret = duk_pcall(ctx, 1);
+    if (ret != DUK_EXEC_SUCCESS) {
+      closedir(dr);
+      duk_throw(ctx);
+    }
     duk_pop(ctx);
   }
   closedir(dr);

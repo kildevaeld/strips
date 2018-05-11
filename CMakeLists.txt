@@ -5,6 +5,7 @@ include_directories(
     include 
     vendor/duktape-2.2.1/src
     vendor/csystem/include
+    vendor/which
 )
 
 add_subdirectory(vendor/csystem)

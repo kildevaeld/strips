@@ -1,15 +1,11 @@
-const io = require('io'),
-    curl = require('curl'),
-    fs = require('filesystem');
+const exec = require('exec').exec,
+    io = require('io')
 
 
-/*
-const req = new curl.Request({
-    url: "http://google.com",
-});
+io.stdout.write("Hello, World: ");
 
-const res = curl.req(req);*/
+var out = io.stdin.read(10);
+console.log(out)
+//const out = exec('uglifyjs', __filename);
 
-fs.readdir('.', function (str) {
-    console.log(str)
-})
+//console.log(new TextDecoder().decode(out))
