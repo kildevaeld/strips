@@ -9,3 +9,5 @@ typedef enum strips_ret_t {
   STRIPS_MOUDLE_NOT_FOUND
 
 } strips_ret_t;
+
+typedef duk_ret_t (*strips_module_initializer)(duk_context *ctx);

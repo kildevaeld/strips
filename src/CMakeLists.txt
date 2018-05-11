@@ -7,7 +7,9 @@ set(SOURCES
     utils.c
     commonjs.c
     commonjs_module.c
+    commonjs_file.c
     modules.c
+    types.c
 )
 
 add_library(strips ${SOURCES})

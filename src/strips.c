@@ -4,6 +4,8 @@
 #include <strips/modules.h>
 #include <strips/strips.h>
 #include <strips/utils.h>
+#include "commonjs_file.h"
+
 
 static duk_ret_t get_module_resolver(duk_context *ctx) {
   // duk_push_global_stash(ctx);
@@ -45,6 +47,9 @@ static void strips_initialize_stash(duk_context *ctx) {
   duk_push_c_lightfunc(ctx, strips_push_module, 1, 1, 0);
   duk_put_prop_string(ctx, -2, "find_module");
 
+  duk_push_object(ctx);
+  duk_put_prop_string(ctx, -2, "types");
+
   duk_put_prop_string(ctx, -2, "strips");
 }
 
@@ -61,6 +66,8 @@ strips_ret_t strips_initialize(duk_context *ctx) {
 
   strips_set_module_resolver(ctx, "module", cjs_resolve_module,
                              cjs_load_module);
+
+  strips_set_module_resolver(ctx, "file", cjs_resolve_file, cjs_load_file);
 
   return STRIPS_OK;
 }
