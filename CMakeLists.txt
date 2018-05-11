@@ -11,6 +11,7 @@ add_subdirectory(vendor/csystem)
 add_subdirectory(src)
 add_subdirectory(src/io)
 add_subdirectory(src/curl)
+add_subdirectory(src/filesystem)
 
 add_subdirectory(sp)
 
