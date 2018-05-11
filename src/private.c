@@ -40,17 +40,18 @@ bool strips_has_entry(duk_context *ctx, const char *name) {
   return b;
 }
 
-strips_ret_t strips_push_module(duk_context *ctx, const char *name) {
+duk_ret_t strips_push_module(duk_context *ctx) {
+  const char *name = duk_require_string(ctx, 0);
 
   if (!strips_get_entry(ctx, "modules")) {
-    return STRIPS_NOT_INITIALIZED;
+    return 0;
   }
 
   if (!duk_has_prop_string(ctx, -1, name)) {
-    return STRIPS_MOUDLE_NOT_FOUND;
+    return 0;
   }
 
   duk_get_prop_string(ctx, -1, name);
 
-  return STRIPS_OK;
+  return 1;
 }

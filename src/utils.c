@@ -84,3 +84,17 @@ void duk_unref(duk_context *ctx, int ref) {
 
   duk_pop(ctx);
 }
+
+const char *duk_get_main(duk_context *ctx) {
+  duk_push_global_stash(ctx);
+  duk_get_prop_string(ctx, -1,
+                      "\xff"
+                      "mainModule");
+
+  duk_get_prop_string(ctx, -1, "filename");
+  const char *c = duk_get_string(ctx, -1);
+
+  duk_pop_3(ctx);
+
+  return c;
+}

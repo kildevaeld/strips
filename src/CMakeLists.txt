@@ -6,6 +6,7 @@ set(SOURCES
     private.c
     utils.c
     commonjs.c
+    commonjs_module.c
     modules.c
 )
 

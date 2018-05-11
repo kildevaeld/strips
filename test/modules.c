@@ -4,7 +4,10 @@
 #include <strips/utils.h>
 #include <unity.h>
 
-static duk_ret_t module(duk_context *ctx) {}
+static duk_ret_t module(duk_context *ctx) {
+  duk_push_string(ctx, "Hello");
+  return 1;
+}
 
 void test_modules() {
   duk_context *ctx = duk_create_heap_default();
@@ -16,6 +19,12 @@ void test_modules() {
 
   strips_get_entry(ctx, "modules");
   TEST_ASSERT_EQUAL_INT(true, duk_has_prop_string(ctx, -1, "test"));
-  // duk_push_global_stash(ctx);
-  // duk_dump_context_stdout(ctx);
+  duk_pop(ctx);
+
+  duk_ret_t ok = duk_peval_string(ctx, "require('test');");
+  if (ok != DUK_EXEC_SUCCESS) {
+    duk_get_prop_string(ctx, -1, "stack");
+  }
+
+  TEST_ASSERT_EQUAL_STRING("Hello", duk_get_string(ctx, -1));
 }

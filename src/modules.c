@@ -69,3 +69,32 @@ duk_bool_t duk_module_has(duk_context *ctx, const char *name) {
   duk_pop(ctx);
   return ret;
 }
+
+duk_ret_t strips_set_module_resolver(duk_context *ctx, const char *protocol,
+                                     strips_module_resolve_cb resolve,
+                                     strips_module_load_cb load) {
+
+  if (!strips_get_entry(ctx, "resolvers")) {
+    return false;
+  }
+
+  bool ret = true;
+
+  if (duk_has_prop_string(ctx, -1, protocol)) {
+    ret = false;
+    goto end;
+  }
+
+  duk_push_object(ctx);
+  duk_push_c_lightfunc(ctx, resolve, 1, 1, 0);
+  duk_put_prop_string(ctx, -2, "resolve");
+  duk_push_c_lightfunc(ctx, load, 2, 2, 0);
+  duk_put_prop_string(ctx, -2, "load");
+  duk_push_string(ctx, protocol);
+  duk_put_prop_string(ctx, -2, "protocol");
+  duk_put_prop_string(ctx, -2, protocol);
+
+end:
+  duk_pop(ctx);
+  return ret;
+}

@@ -1,29 +1,28 @@
 {
-    "configurations": [
-        {
-            "name": "Mac",
-            "browse": {
-                "path": [
-                    "${workspaceFolder}"
-                ],
-                "limitSymbolsToIncludedHeaders": true
-            },
-            "includePath": [
-                "${workspaceFolder}",
-                "${workspaceFolder}/include",
-                "${workspaceFolder}/vendor/duktape-2.2.1/src",
-                "${workspaceFolder}/vendor/unity/Unity/src"
+    "configurations": [{
+        "name": "Mac",
+        "browse": {
+            "path": [
+                "${workspaceFolder}"
             ],
-            "defines": [],
-            "macFrameworkPath": [
-                "/System/Library/Frameworks",
-                "/Library/Frameworks"
-            ],
-            "compilerPath": "/usr/bin/clang",
-            "cStandard": "c11",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "clang-x64"
-        }
-    ],
+            "limitSymbolsToIncludedHeaders": true
+        },
+        "includePath": [
+            "${workspaceFolder}",
+            "${workspaceFolder}/vendor/csystem/include",
+            "${workspaceFolder}/include",
+            "${workspaceFolder}/vendor/duktape-2.2.1/src",
+            "${workspaceFolder}/vendor/unity/Unity/src"
+        ],
+        "defines": [],
+        "macFrameworkPath": [
+            "/System/Library/Frameworks",
+            "/Library/Frameworks"
+        ],
+        "compilerPath": "/usr/bin/clang",
+        "cStandard": "c11",
+        "cppStandard": "c++17",
+        "intelliSenseMode": "clang-x64"
+    }],
     "version": 4
 }
