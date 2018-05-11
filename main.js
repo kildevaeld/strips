@@ -1,6 +1,8 @@
-const exec = require('exec').exec,
+const exec = require('exec'),
     io = require('io')
 
+
+console.log(exec.which('node'));
 
 io.stdout.write("Hello, World: ");
 

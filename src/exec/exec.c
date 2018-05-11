@@ -7,6 +7,21 @@
 #include <unistd.h>
 #include <which.h>
 
+static duk_ret_t duk_exec_which(duk_context *ctx) {
+
+  const char *key = duk_require_string(ctx, 0);
+
+  char *out = which(key);
+  if (!out) {
+    duk_push_undefined(ctx);
+  } else {
+    duk_push_string(ctx, out);
+    free(out);
+  }
+
+  return 1;
+}
+
 static duk_ret_t duk_exec_exec(duk_context *ctx) {
 
   const char *cmdname = duk_require_string(ctx, 0);
@@ -83,6 +98,9 @@ static duk_ret_t duk_exec_module(duk_context *ctx) {
 
   duk_push_c_function(ctx, duk_exec_exec, DUK_VARARGS);
   duk_put_prop_string(ctx, -2, "exec");
+
+  duk_push_c_function(ctx, duk_exec_which, DUK_VARARGS);
+  duk_put_prop_string(ctx, -2, "which");
 
   return 1;
 }
