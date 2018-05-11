@@ -9,6 +9,7 @@ set(SOURCES
     commonjs_module.c
     commonjs_file.c
     modules.c
+    console.c
     types.c
 )
 

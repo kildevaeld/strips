@@ -404,3 +404,17 @@ void strips_commonjs_init(duk_context *ctx) {
                    DUK_DEFPROP_SET_CONFIGURABLE);
   duk_pop(ctx);
 }
+
+duk_ret_t strips_commonjs_eval_main(duk_context *ctx, const char *path) {
+  /*
+   *  Stack: [ ... source ]
+   */
+
+  strips__push_module_object(ctx, path, 1 /*main*/);
+  /* [ ... source module ] */
+
+  duk_dup(ctx, 0);
+  /* [ ... source module source ] */
+
+  return duk_safe_call(ctx, strips__eval_module_source, NULL, 2, 1);
+}

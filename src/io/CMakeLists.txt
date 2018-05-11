@@ -7,4 +7,4 @@ set(SOURCES
 )
 
 add_library(strips-io ${SOURCES})
-target_link_libraries(strips-io dukext)
+target_link_libraries(strips-io strips)
