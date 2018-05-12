@@ -2,6 +2,10 @@
 #include <duktape.h>
 #include <strips/definitions.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef duk_ret_t (*strips_module_resolve_cb)(duk_context *);
 typedef duk_ret_t (*strips_module_load_cb)(duk_context *);
 
@@ -19,3 +23,7 @@ duk_bool_t duk_module_has(duk_context *ctx, const char *name);
 duk_ret_t strips_set_module_resolver(duk_context *ctx, const char *protocol,
                                      strips_module_resolve_cb resolve,
                                      strips_module_load_cb load);
+
+#ifdef __cplusplus
+}
+#endif

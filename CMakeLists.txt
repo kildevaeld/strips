@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
 project(strips)
 
+set(CMAKE_CXX_STANDARD 14)
+
 include_directories(
     include 
     vendor/duktape-2.2.1/src
@@ -12,11 +14,14 @@ set(CS_BUILD_TERMINAL on)
 add_subdirectory(vendor/csystem)
 
 add_subdirectory(src)
+add_subdirectory(cxx)
 add_subdirectory(src/io)
 add_subdirectory(src/curl)
 add_subdirectory(src/filesystem)
 
-add_subdirectory(sp)
+add_subdirectory(strips)
+
+
 
 include(CTest)
 add_subdirectory(vendor/unity)

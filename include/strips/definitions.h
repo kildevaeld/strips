@@ -1,5 +1,8 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef enum strips_log_level_s { STRIPS_DEBUG, STRIPS_INFO, STRIPS_WARN, STRIPS_ERROR } strips_log_level_t;
 
 
@@ -24,3 +27,6 @@ typedef enum strips_ret_t {
 
 typedef duk_ret_t (*strips_module_initializer)(duk_context *ctx);
 
+#ifdef __cplusplus
+}
+#endif
