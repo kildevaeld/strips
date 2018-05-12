@@ -10,7 +10,7 @@ namespace strips {
 
 class VM;
 class Object;
-class Value;
+class Reference;
 
 void to_duktape(duk_context *ctx, std::function<duk_ret_t(VM &)> fn);
 
@@ -110,8 +110,8 @@ void to_duktape(duk_context *ctx, const Object &o);
 
 void from_duktape(duk_context *ctx, duk_idx_t idx, Object &o);
 
-void to_duktape(duk_context *ctx, const Value &o);
+void to_duktape(duk_context *ctx, const Reference &o);
 
-void from_duktape(duk_context *ctx, duk_idx_t idx, Value &o);
+void from_duktape(duk_context *ctx, duk_idx_t idx, Reference &o);
 
 } // namespace strips

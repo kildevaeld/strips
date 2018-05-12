@@ -62,6 +62,7 @@ strips_ret_t strips_initialize(duk_context *ctx) {
 
   duk_push_global_stash(ctx);
   if (duk_has_prop_string(ctx, -1, "strips")) {
+    duk_pop(ctx);
     return STRIPS_ALREADY_INITIALIZED;
   }
 

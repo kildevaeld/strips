@@ -1,9 +1,8 @@
+//#include "object_p.hpp"
 #include <strips++/converters.hpp>
 #include <strips++/object.hpp>
-#include <strips++/strips++.hpp>
-#include "object_p.hpp"
-#include <strips++/value.hpp>
-
+#include <strips++/reference.hpp>
+#include <strips++/vm.hpp>
 
 namespace strips {
 
@@ -45,10 +44,18 @@ static duk_ret_t fn_apply(duk_context *ctx) {
   duk_push_current_function(ctx);
   duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("bag"));
   fn_bag *bag = (fn_bag *)duk_get_pointer(ctx, -1);
-  duk_pop(ctx);
+  duk_pop_2(ctx);
 
   VM strips(ctx);
-  return bag->fn(strips);
+  duk_ret_t ret;
+  try {
+    ret = bag->fn(strips);
+  } catch (const std::runtime_error &e) {
+    duk_type_error(ctx, e.what());
+  } catch (...) {
+    duk_type_error(ctx, "unknon error");
+  }
+  return ret;
 }
 
 void to_duktape(duk_context *ctx, std::function<duk_ret_t(VM &)> fn) {
@@ -71,18 +78,16 @@ void to_duktape(duk_context *ctx, const Object &o) { o.push(); }
 
 void from_duktape(duk_context *ctx, duk_idx_t idx, Object &o) {
   duk_dup(ctx, idx);
-  o.d->ctx = ctx;
-  o.d->ref = duk_ref(ctx);
+  o.set_ctx(ctx);
+  o.set_ref(duk_ref(ctx));
 }
 
-void to_duktape(duk_context *ctx, const Value &o) {
-  o.push();
-}
+void to_duktape(duk_context *ctx, const Reference &o) { o.push(); }
 
-void from_duktape(duk_context *ctx, duk_idx_t idx, Value &o) {
+void from_duktape(duk_context *ctx, duk_idx_t idx, Reference &o) {
   duk_dup(ctx, idx);
-  o.m_ref = duk_ref(ctx);
-  o.m_ctx = ctx;
+  o.set_ref(duk_ref(ctx));
+  o.set_ctx(ctx);
 }
 
 } // namespace strips

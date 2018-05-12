@@ -1,16 +1,17 @@
 #include <strips++/value.hpp>
 
 namespace strips {
-Value::Value() {}
-Value::Value(duk_context *ctx, int ref) : m_ctx(ctx), m_ref(ref) {}
-Value::Value(const Value &v)
-    : m_ctx(v.m_ctx), m_ref(v.m_ref), m_type(v.m_type) {}
+/*
+Value::Value() : Reference() {}
+Value::Value(duk_context *ctx, duk_idx_t idx) : Reference(ctx, idx) {}
+Value::Value(const Value &v) : Reference(v) {}
 Value::Value(const Value &&v)
-    : m_ctx(v.m_ctx), m_ref(v.m_ref), m_type(v.m_type) {}
+  : Reference(std::move(v))*/
+/*m_ctx(v.m_ctx), m_ref(v.m_ref), m_type(v.m_type) */ //{}
 
 // Value::~Value() {}
 
-Value &Value::operator=(const Value &v) {
+/*Value &Value::operator=(const Value &v) {
   if (this != &v) {
     m_ctx = v.m_ctx;
     m_ref = v.m_ref;
@@ -27,9 +28,9 @@ Value &Value::operator=(Value &&v) {
     v.m_ref = 0;
   }
   return *this;
-}
+}*/
 
-Type Value::type() const { return m_type; }
+/*Type Value::type() const { return m_type; }
 void Value::push() const { duk_push_ref(m_ctx, m_ref); }
 
 void Value::init_type() {
@@ -65,6 +66,6 @@ void Value::init_type() {
   } break;
   }
   duk_pop(m_ctx);
-}
+}*/
 
 } // namespace strips
