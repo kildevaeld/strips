@@ -11,6 +11,7 @@ namespace strips {
 class VM;
 class Object;
 class Reference;
+class Any;
 
 void to_duktape(duk_context *ctx, std::function<duk_ret_t(VM &)> fn);
 
@@ -20,9 +21,9 @@ void to_duktape(duk_context *ctx, const std::string &str);
 
 void from_duktape(duk_context *ctx, duk_idx_t idx, std::string &str);
 
-/*void to_duktape(duk_context *ctx, const bool &str);
+//void to_duktape(duk_context *ctx, const bool &str);
 
-void from_duktape(duk_context *ctx, duk_idx_t idx, bool &str);*/
+//void from_duktape(duk_context *ctx, duk_idx_t idx, bool &str);
 
 template <class T,
           typename std::enable_if<std::is_integral<T>::value>::type * = nullptr>
@@ -106,6 +107,9 @@ void from_duktape(duk_context *ctx, duk_idx_t idx,
   duk_pop(ctx);
 }
 
+
+void to_duktape(duk_context *ctx, const std::map<std::string,Any> &v);
+
 void to_duktape(duk_context *ctx, const Object &o);
 
 void from_duktape(duk_context *ctx, duk_idx_t idx, Object &o);
@@ -113,5 +117,6 @@ void from_duktape(duk_context *ctx, duk_idx_t idx, Object &o);
 void to_duktape(duk_context *ctx, const Reference &o);
 
 void from_duktape(duk_context *ctx, duk_idx_t idx, Reference &o);
+
 
 } // namespace strips

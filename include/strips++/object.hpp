@@ -82,7 +82,7 @@ public:
   Object(Object &&);
   virtual ~Object();
 
-  template <class T> void set(const std::string &name, const T &v) {
+  template <class T> void set(const std::string &name, const T &v) const {
     push();
     to_duktape(ctx(), v);
     duk_put_prop_string(ctx(), -2, name.c_str());

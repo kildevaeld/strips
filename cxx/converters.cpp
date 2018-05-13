@@ -3,6 +3,7 @@
 #include <strips++/object.hpp>
 #include <strips++/reference.hpp>
 #include <strips++/vm.hpp>
+#include <strips++/any.hpp>
 
 namespace strips {
 
@@ -10,10 +11,19 @@ void to_duktape(duk_context *ctx, const std::string &str) {
   duk_push_string(ctx, str.c_str());
 }
 
+
 void from_duktape(duk_context *ctx, duk_idx_t idx, std::string &str) {
   if (duk_is_string(ctx, idx)) {
     const char *s = duk_get_string(ctx, idx);
     str = std::string(s);
+  } else if (duk_is_buffer_data(ctx, idx)) {
+    duk_dup(ctx, idx);
+    duk_buffer_to_string(ctx, idx);
+    const char *s = duk_get_string(ctx, idx);
+    str = std::string(s);
+    duk_pop(ctx);
+  } else {
+    throw std::runtime_error("not a string");
   }
 }
 
@@ -88,6 +98,14 @@ void from_duktape(duk_context *ctx, duk_idx_t idx, Reference &o) {
   duk_dup(ctx, idx);
   o.set_ref(duk_ref(ctx));
   o.set_ctx(ctx);
+}
+
+void to_duktape(duk_context *ctx, const std::map<std::string,Any> &v) {
+  duk_push_object(ctx);
+  for (auto &a : v) {
+    a.second.push_duktape(ctx);
+    duk_put_prop_string(ctx, -2, a.first.c_str());
+  }
 }
 
 } // namespace strips

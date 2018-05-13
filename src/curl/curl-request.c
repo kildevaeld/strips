@@ -198,6 +198,7 @@ static bool duk_curl_request(duk_context *ctx, CURL *curl,
                              struct curl_bag *bags, char **err) {
 
   // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
   duk_idx_t idx = duk_normalize_index(ctx, -1);
 
   struct curl_slist *list = NULL;

@@ -39,9 +39,30 @@ int main() {
 
   auto curl = vm.require("curl");
 
-  auto resp = curl.get<Function>("get")("https://google.com");
+  vm.object({{
+    "Hello", true
+  }});
 
-  resp.push();
-  vm.dump();
+  /*auto o = vm.object({
+    {"url", "wotld"}, 
+    {"rapper", "raprap"},
+    {"raprap", a.ref_up()}
+  });
+  o.set("url", "https://google.com");
+  std::cout << o << std::endl;*/
+
+  auto o = vm.object({
+    {"url", "https://google.com"}
+  });
+  
+  auto request = curl.get<Function>("Request").construct(o);
+
+  std::cout << request << std::endl;
+  // auto resp = curl.call<Object>("req", request);
+  // std::cout << resp.get("header") << std::endl;
   // std::cout << resp.get<int>("length") << std::endl;
+  /*curl.unref();
+  o.unref();
+  vm.stash().push();
+  vm.dump().pop().dump();*/
 }
