@@ -71,7 +71,7 @@ strips_ret_t strips_initialize(duk_context *ctx) {
   duk_pop(ctx);
   strips_commonjs_init(ctx);
   duk_console_init(ctx, DUK_CONSOLE_FLUSH);
-  duk_module_add_lstr(ctx, "util", (const char *)utils_js, utils_js_len);
+  duk_module_add_lstr(ctx, "util", (const char *)util_js, util_js_len);
 
   strips_set_module_resolver(ctx, "module", cjs_resolve_module,
                              cjs_load_module);

@@ -3,7 +3,8 @@ const io = require('io'),
     path = require("path"),
     exec = require('exec').exec
 
-const templatePath = path.join(__dirname, "../js");
+//const templatePath = path.join(__dirname, "../js");
+const templatePath = path.join(__dirname, "../runtime/dist");
 const fileData = []
 fs.readdir(templatePath, function (fileName) {
     const full = path.join(templatePath, fileName);

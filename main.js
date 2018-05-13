@@ -3,7 +3,14 @@ const exec = require('exec'),
     prompt = require('prompt'),
     util = require('util');
 
-console.log(util.flags(process.argv.slice(1)), process.cwd());
+const flags = util.flags(process.argv.slice(1), {
+    name: {
+        type: "string",
+        alias: 'n'
+    }
+});
+
+console.log(flags, process.cwd());
 
 prompt.list('Name:', ['choud', 'moud']);
 

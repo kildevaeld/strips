@@ -50,8 +50,12 @@ strips_ret_t duk_module_add_lstr(duk_context *ctx, const char *name,
   duk_concat(ctx, 4);
   duk_push_string(ctx, name); // filename
   duk_pcompile(ctx, DUK_COMPILE_EVAL);
-  duk_call(ctx, 0);
-
+  duk_ret_t ret = duk_pcall(ctx, 0);
+  if (ret != DUK_EXEC_SUCCESS) {
+    duk_get_prop_string(ctx, -1, "stack");
+    printf("errr: %s\n", duk_get_string(ctx, -1));
+    duk_throw(ctx);
+  }
   duk_put_prop_string(ctx, -2, name);
 
   duk_pop(ctx);
