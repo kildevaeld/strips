@@ -11,6 +11,7 @@ include_directories(
 )
 
 set(CS_BUILD_TERMINAL on)
+set(CS_BUILD_CXX on)
 add_subdirectory(vendor/csystem)
 
 add_subdirectory(src)

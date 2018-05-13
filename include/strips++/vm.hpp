@@ -53,7 +53,7 @@ public:
     return std::move(ctx());
   }
 
-  template <class T> const VM &push(const T &v) {
+  template <class T> const VM &push(const T &v) const {
     to_duktape(ctx(), v);
     return *this;
   }

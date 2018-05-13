@@ -1,7 +1,9 @@
+#include <csystem/csystem++.hpp>
 #include <iostream>
 #include <strips++/value.hpp>
 #include <strips++/vm.hpp>
 #include <strips/curl/curl.h>
+#include <strips/exec/exec.h>
 #include <strips/io/io.h>
 
 using namespace strips;
@@ -29,45 +31,34 @@ void from_duktape(const VM &ctx, duk_idx_t idx, Data &data) {
 
 } // namespace tem
 
-int main() {
+int main(int argc, char *argv[]) {
+
+  if (argc < 2) {
+    std::cerr << "usage: strips2 <path>" << std::endl;
+    return 1;
+  }
 
   VM vm;
   strips_io_init(vm.ctx());
   strips_curl_init(vm.ctx());
+  strips_exec_init(vm.ctx());
 
-  auto a = vm.array("Test", "mig", 2330.2, false, 122);
+  std::vector<std::string> args(argv + 1, argv + argc);
+  args[0] = csystem::path::join(csystem::standardpaths::cwd(), args[0]);
 
-  auto curl = vm.require("curl");
+  auto process =
+      vm.object({{"argv", args}, {"cwd", [](const VM &vm) {
+                                    vm.push(csystem::standardpaths::cwd());
+                                    return 1;
+                                  }}});
 
-  vm.object({{"Hello", true}});
+  vm.global().set("process", process);
 
-  auto ref = vm.eval("(new Date)");
-  std::cout << ref.as<Object>() << std::endl;
+  auto result = vm.eval_path(argv[1]);
 
-  /*auto o = vm.object({
-    {"url", "wotld"},
-    {"rapper", "raprap"},
-    {"raprap", a.ref_up()}
-  });
-  o.set("url", "https://google.com");
-  std::cout << o << std::endl;*/
+  /*if (!result.is<Type::Invalid>()) {
+    std::cout << result << std::endl;
+  }*/
 
-  auto o = vm.object({{"url", "https://google.com"}});
-
-  auto request = curl.get<Function>("Request").construct(o);
-  std::cout << o << std::endl;
-  auto resp = curl.call<Object>("req", request);
-
-  std::cout << "status " << resp.get<int>("statusCode") << std::endl;
-  std::cout << "body length: " << resp.get<Object>("body").get("length")
-            << std::endl;
-  // curl.get<Function>("get")(request);
-  // std::cout << request << std::endl;
-  // auto resp = curl.call<Object>("req", request);
-  // std::cout << resp.get("header") << std::endl;
-  // std::cout << resp.get<int>("length") << std::endl;
-  /*curl.unref();
-  o.unref();
-  vm.stash().push();
-  vm.dump().pop().dump();*/
+  return 0;
 }
