@@ -1,6 +1,7 @@
 #include <iostream>
 #include <strips++/value.hpp>
 #include <strips++/vm.hpp>
+#include <strips/curl/curl.h>
 #include <strips/io/io.h>
 
 using namespace strips;
@@ -32,13 +33,15 @@ int main() {
 
   VM vm;
   strips_io_init(vm.ctx());
+  strips_curl_init(vm.ctx());
 
   auto a = vm.array("Test", "mig", 2330.2, false, 122);
 
-  auto io = vm.require("io");
+  auto curl = vm.require("curl");
 
-  auto file = io.get<Function>("File").construct("../main.js", "r");
-  auto ret = file.call<Object>("read", 0, 30303);
+  auto resp = curl.get<Function>("get")("https://google.com");
 
-  std::cout << ret.get<int>("length") << std::endl;
+  resp.push();
+  vm.dump();
+  // std::cout << resp.get<int>("length") << std::endl;
 }
