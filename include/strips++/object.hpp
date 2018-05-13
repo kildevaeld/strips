@@ -103,7 +103,7 @@ public:
   }
 
   template <typename T = Reference, typename... Args>
-  T call(const std::string &prop, Args &... args) {
+  T call(const std::string &prop, const Args &... args) {
 
     push();
     duk_idx_t idx = duk_normalize_index(ctx(), -1);
@@ -131,9 +131,9 @@ public:
 
     T v;
     from_duktape(ctx(), -1, v);
-    
+
     duk_pop(ctx());
-   
+
     return std::move(v);
   }
 
