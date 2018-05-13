@@ -14,6 +14,8 @@ void duk_unref(duk_context *ctx, int ref);
 
 void duk_commonjs_wrapl(duk_context *ctx, const char *buffer, size_t len);
 
+duk_bool_t duk_is_date(duk_context *ctx, duk_idx_t);
+
 const char *duk_get_main(duk_context *ctx);
 
 #ifdef __cplusplus

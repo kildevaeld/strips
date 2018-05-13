@@ -119,3 +119,12 @@ const char *duk_get_main(duk_context *ctx) {
 
   return c;
 }
+
+duk_bool_t duk_is_date(duk_context *ctx, duk_idx_t idx) {
+  duk_dup(ctx, idx);
+  duk_get_global_string(ctx, "Date");
+
+  duk_bool_t ret = duk_instanceof(ctx, -2, -1);
+  duk_pop_2(ctx);
+  return ret;
+}

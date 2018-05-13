@@ -1,11 +1,10 @@
 #pragma once
 #include <memory>
+#include <strips++/any.hpp>
 #include <strips++/array.hpp>
 #include <strips++/converters.hpp>
 #include <strips++/function.hpp>
 #include <strips++/object.hpp>
-#include <strips++/any.hpp>
-
 
 namespace strips {
 
@@ -26,7 +25,7 @@ public:
 
   duk_context *ctx() const;
 
-  Object object(const std::map<std::string,Any> &list) {
+  Object object(const std::map<std::string, Any> &list) {
     push(list);
     auto o = pop<Object>();
     return std::move(o);

@@ -11,7 +11,7 @@ static Type get_type(duk_context *ctx);
 std::ostream &operator<<(std::ostream &s, const Type &type) {
   switch (type) {
   case Type::Bool:
-    s <<  std::string("Bool");
+    s << std::string("Bool");
     break;
   case Type::Undefined:
     s << std::string("Undefined");
@@ -23,7 +23,7 @@ std::ostream &operator<<(std::ostream &s, const Type &type) {
     s << std::string("Number");
     break;
   case Type::String:
-     s << std::string("String");
+    s << std::string("String");
     break;
   case Type::Function:
     s << std::string("Function");
@@ -33,8 +33,11 @@ std::ostream &operator<<(std::ostream &s, const Type &type) {
 
   } break;
   case Type::Object: {
-     s << std::string("Object");
+    s << std::string("Object");
   } break;
+  case Type::Date:
+    s << std::string("Date");
+    break;
   case Type::Array: {
     s << std::string("Array");
   } break;
@@ -64,11 +67,11 @@ public:
 };
 
 ReferencePrivate *ReferencePrivate::clone() const {
- 
+
   duk_push_ref(ctx, ref);
-  duk_idx_t  nidx = duk_normalize_index(ctx, -1);
+  duk_idx_t nidx = duk_normalize_index(ctx, -1);
   auto type = get_type(ctx);
-   std::cout << "clone " << type  << std::endl;
+  std::cout << "clone " << type << std::endl;
   switch (type) {
   case Type::Bool:
   case Type::Undefined:
@@ -102,9 +105,9 @@ ReferencePrivate *ReferencePrivate::clone() const {
       duk_get_prop_index(ctx, nidx, i);
       duk_put_prop_index(ctx, aidx, i);
     }
-  } break;  
+  } break;
   }
-  
+
   auto out = new ReferencePrivate(ctx, -1);
   duk_pop_2(ctx);
   return out;
@@ -156,9 +159,7 @@ void Reference::push() const {
   duk_push_ref(ptr->ctx, ptr->ref);
 }
 
-void Reference::unref() {
-  this->set_ref(0);
-}
+void Reference::unref() { this->set_ref(0); }
 
 static Type get_type(duk_context *ctx) {
 
@@ -176,7 +177,9 @@ static Type get_type(duk_context *ctx) {
   case DUK_TYPE_BUFFER:
     return Type::Buffer;
   case DUK_TYPE_OBJECT: {
-    if (duk_is_function(ctx, -1)) {
+    if (duk_is_date(ctx, -1)) {
+      return Type::Date;
+    } else if (duk_is_function(ctx, -1)) {
       return Type::Function;
     } else if (duk_is_array(ctx, -1)) {
       return Type::Array;
@@ -190,7 +193,6 @@ static Type get_type(duk_context *ctx) {
 }
 
 Type Reference::type() const {
-
   push();
   Type type = get_type(ctx());
   duk_pop(ctx());
@@ -224,18 +226,12 @@ std::ostream &operator<<(std::ostream &s, const Reference &r) {
     break;
   case Type::Buffer: {
     s << std::string("[Buffer]");
-
   } break;
+  case Type::Date:
+    s << std::string("[Date]");
+    break;
   case Type::Object: {
-    /*d uk_idx_t oidx = duk_push_object(ctx);
-     duk_enum(ctx, -2, DUK_ENUM_OWN_PROPERTIES_ONLY);
-     while (duk_next(ctx, -1, 1)) {
-       const char *k = duk_get_string(ctx, -2);
-       duk_put_prop_string(ctx, oidx, k);
-       duk_pop(ctx);
-     }
-     duk_pop(ctx);*/
-    s << r.as<Object>(); // std::string("[Object]");
+    s << r.as<Object>();
   } break;
   case Type::Array: {
     s << r.as<Array>();

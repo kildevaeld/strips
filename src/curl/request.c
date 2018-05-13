@@ -84,14 +84,16 @@ static bool validate_options(duk_context *ctx, char **err) {
 }
 
 static duk_ret_t curl_request_ctor(duk_context *ctx) {
+  
   if (!duk_is_constructor_call(ctx)) {
     return DUK_RET_TYPE_ERROR;
   }
+  
   duk_push_this(ctx);
   if (duk_is_object(ctx, 0)) {
     char *err = NULL;
     if (!validate_options(ctx, &err)) {
-      duk_type_error(ctx, "invalid options: ", err);
+      duk_type_error(ctx, "invalid options: %s", err);
     }
 
     duk_dup(ctx, 0);

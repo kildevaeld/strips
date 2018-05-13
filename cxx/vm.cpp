@@ -50,7 +50,10 @@ Reference VM::eval_script(const std::string &script,
   duk_pop(ctx());
   return std::move(v);
 }
-Reference VM::eval(const std::string &script) const {}
+Reference VM::eval(const std::string &script) const {
+  duk_eval_string(ctx(), script.c_str());
+  return std::move(pop<Reference>());
+}
 
 duk_context *VM::ctx() const { return d->ctx; }
 
@@ -108,7 +111,10 @@ Object VM::require(const std::string &name) const {
   return global().call<Object>("require", name);
 }
 
-const VM & VM::dump() const { duk_dump_context_stdout(d->ctx); return *this; }
+const VM &VM::dump() const {
+  duk_dump_context_stdout(d->ctx);
+  return *this;
+}
 
 duk_size_t VM::top() const { return duk_get_top(d->ctx); }
 

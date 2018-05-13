@@ -51,6 +51,10 @@ private:
         duk_get_prop_string(ctx(), -1, "stack");
         msg = duk_get_string(ctx(), -1);
         duk_pop(ctx());
+      } else {
+          duk_get_prop_string(ctx(), -1, "message");
+        msg = duk_get_string(ctx(), -1);
+        duk_pop(ctx());
       }
       throw std::runtime_error(msg);
     }

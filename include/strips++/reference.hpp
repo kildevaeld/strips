@@ -19,6 +19,7 @@ enum class Type {
   Undefined,
   Function,
   Buffer,
+  Date,
   Invalid
 };
 
