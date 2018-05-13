@@ -49,7 +49,7 @@ strips_ret_t duk_module_add_lstr(duk_context *ctx, const char *name,
       "\n})"); /* Newline allows module last line to contain a // comment. */
   duk_concat(ctx, 4);
   duk_push_string(ctx, name); // filename
-  duk_compile(ctx, DUK_COMPILE_EVAL);
+  duk_pcompile(ctx, DUK_COMPILE_EVAL);
   duk_call(ctx, 0);
 
   duk_put_prop_string(ctx, -2, name);

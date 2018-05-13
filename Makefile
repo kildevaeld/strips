@@ -1,4 +1,4 @@
 
 
 generate:
-	build/sp/strips scripts/generate_js.js | clang-format > src/script-data.h
+	build/strips/strips scripts/generate_js.js | clang-format > src/script-data.h

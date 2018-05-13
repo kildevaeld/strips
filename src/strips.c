@@ -11,6 +11,7 @@
 
 #include "path/path.h"
 #include "prompt/prompt.h"
+#include "script-data.h"
 
 static duk_ret_t get_module_resolver(duk_context *ctx) {
   // duk_push_global_stash(ctx);
@@ -70,6 +71,7 @@ strips_ret_t strips_initialize(duk_context *ctx) {
   duk_pop(ctx);
   strips_commonjs_init(ctx);
   duk_console_init(ctx, DUK_CONSOLE_FLUSH);
+  duk_module_add_lstr(ctx, "util", (const char *)utils_js, utils_js_len);
 
   strips_set_module_resolver(ctx, "module", cjs_resolve_module,
                              cjs_load_module);

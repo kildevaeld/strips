@@ -46,18 +46,19 @@ int main(int argc, char *argv[]) {
   std::vector<std::string> args(argv + 1, argv + argc);
   args[0] = csystem::path::join(csystem::standardpaths::cwd(), args[0]);
 
-  auto process =
-      vm.object({{"argv", args}, {"cwd", [](const VM &vm) {
-                                    vm.push(csystem::standardpaths::cwd());
-                                    return 1;
-                                  }}});
+  auto process = vm.object({{"argv", args},
+                            {"platform", cs_platform_name()},
+                            {"cwd", [](const VM &vm) {
+                               vm.push(csystem::standardpaths::cwd());
+                               return 1;
+                             }}});
 
   vm.global().set("process", process);
 
   auto result = vm.eval_path(argv[1]);
 
   /*if (!result.is<Type::Invalid>()) {
-    std::cout << result << std::endl;
+    std::cout << result << s  td::endl;
   }*/
 
   return 0;

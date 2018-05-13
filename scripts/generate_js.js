@@ -4,7 +4,6 @@ const io = require('io'),
     exec = require('exec').exec
 
 const templatePath = path.join(__dirname, "../js");
-
 const fileData = []
 fs.readdir(templatePath, function (fileName) {
     const full = path.join(templatePath, fileName);
@@ -44,5 +43,5 @@ fileData.forEach(function (c) {
     out.push("static const unsigned char " + base + "_js[] = {" + format(c.buffer) + '};\n');
     out.push("static int " + base + "_js_len = " + c.buffer.length + ';\n');
 });;
-
-io.stdout.write(out.join('\n'));
+console.log(out.join('\n'));
+//io.stdout.write(out.join('\n'));

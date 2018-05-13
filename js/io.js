@@ -19,7 +19,6 @@ exports.readline = function readline(reader) {
     console.log('reader', reader)
     while (true) {
         var d = reader.read(5);
-        return "RAPRARP"
         if (d[0] == '\n' || d[1] == '\r')
             break;
         out.push(d);

@@ -81,7 +81,7 @@ static duk_ret_t duk_io_file_read(duk_context *ctx) {
   void *ptr = duk_push_dynamic_buffer(ctx, len);
   int re = fread(ptr, len, 1, file);
   if (re != len) {
-    ptr = duk_resize_buffer(ctx, -1, re);
+    ptr = duk_resize_buffer(ctx, -1, re * len);
   }
   return 1;
 }
