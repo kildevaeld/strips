@@ -1,5 +1,6 @@
 #include "../src/private.h"
 #include <csystem/string.h>
+#include <errno.h>
 #include <strips/modules.h>
 #include <strips/os/os.h>
 #include <strips/utils.h>
@@ -19,7 +20,9 @@ static duk_ret_t duk_os_env_get(duk_context *ctx) {
 static duk_ret_t duk_os_env_set(duk_context *ctx) {
   const char *n = duk_require_string(ctx, 1);
   const char *v = duk_require_string(ctx, 2);
-  setenv(n, v, 1);
+  if (setenv(n, v, 1) != 0) {
+    duk_type_error(ctx, "%s", strerror(errno));
+  }
 
   return 0;
 }
@@ -29,7 +32,15 @@ static duk_ret_t duk_os_env_has(duk_context *ctx) {
   return 1;
 }
 
-static duk_ret_t duk_os_env_del(duk_context *ctx) { return 0; }
+static duk_ret_t duk_os_env_del(duk_context *ctx) {
+  const char *k = duk_require_string(ctx, 1);
+  duk_del_prop_string(ctx, 0, k);
+  if (unsetenv(k) != 0) {
+    duk_type_error(ctx, "%s", strerror(errno));
+  }
+
+  return 0;
+}
 
 static duk_ret_t duk_os_env_ownkeys(duk_context *ctx) {
 
@@ -54,9 +65,21 @@ static duk_ret_t duk_os_module(duk_context *ctx) {
   strips_get_entry(ctx, "os");
   duk_get_prop_string(ctx, -1, "argv");
   duk_put_prop_string(ctx, -3, "argv");
-  duk_get_prop_string(ctx, -1, "env");
-  duk_put_prop_string(ctx, -3, "env");
   duk_pop(ctx);
+
+  duk_push_object(ctx);
+
+  duk_push_object(ctx);
+  duk_push_c_function(ctx, duk_os_env_get, 2);
+  duk_put_prop_string(ctx, -2, "get");
+  duk_push_c_function(ctx, duk_os_env_set, 3);
+  duk_put_prop_string(ctx, -2, "set");
+  duk_push_c_function(ctx, duk_os_env_has, 2);
+  duk_put_prop_string(ctx, -2, "has");
+  duk_push_c_function(ctx, duk_os_env_ownkeys, 1);
+  duk_put_prop_string(ctx, -2, "ownKeys");
+  duk_push_proxy(ctx, 0);
+  duk_put_prop_string(ctx, -2, "env");
 
   return 1;
 }
@@ -76,22 +99,6 @@ void strips_os_init(duk_context *ctx, int argc, char *argv[], char **env) {
     duk_push_undefined(ctx);
   }
   duk_put_prop_string(ctx, -2, "argv");
-
-  duk_push_object(ctx);
-
-  duk_push_object(ctx);
-  duk_push_c_function(ctx, duk_os_env_get, 2);
-  duk_put_prop_string(ctx, -2, "get");
-  duk_push_c_function(ctx, duk_os_env_set, 3);
-  duk_put_prop_string(ctx, -2, "set");
-  duk_push_c_function(ctx, duk_os_env_has, 2);
-  duk_put_prop_string(ctx, -2, "has");
-  duk_push_c_function(ctx, duk_os_env_ownkeys, 1);
-  duk_put_prop_string(ctx, -2, "ownKeys");
-
-    duk_push_proxy(ctx, 0);
-
-  duk_put_prop_string(ctx, -2, "env");
 
   strips_push_entry(ctx, "os");
 
