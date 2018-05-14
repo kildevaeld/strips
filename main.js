@@ -5,7 +5,9 @@ const exec = require('exec'),
     os = require('os');
 
 
-console.log(os.env.PATH)
+var test = new Test("World");
+
+console.log('Hello,', test.fn());
 
 const flags = util.flags(process.argv.slice(1), {
     name: {
@@ -16,7 +18,7 @@ const flags = util.flags(process.argv.slice(1), {
 
 console.log(flags, process.cwd());
 
-prompt.list('Name:', ['choud', 'moud']);
+//prompt.list('Name:', ['choud', 'moud']);
 
 
 //console.log(new TextDecoder().decode(out))

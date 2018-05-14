@@ -5,6 +5,7 @@
 #include <strips++/converters.hpp>
 #include <strips++/function.hpp>
 #include <strips++/object.hpp>
+//#include <strips++/builder.hpp>
 
 namespace strips {
 
@@ -19,9 +20,9 @@ public:
   VM(const VM &) = delete;
   ~VM();
 
-  Reference eval_path(const std::string &) const;
-  Reference eval_script(const std::string &, const std::string &) const;
-  Reference eval(const std::string &) const;
+  Reference eval_path(const std::string &) ;
+  Reference eval_script(const std::string &, const std::string &) ;
+  Reference eval(const std::string &) ;
 
   duk_context *ctx() const;
 
@@ -53,17 +54,33 @@ public:
     return std::move(ctx());
   }
 
-  template <class T> const VM &push(const T &v) const {
+  /*template <typename T>ClassBuilder ctor(T fn) {
+    ClassBuilder builder(ctx(), std::move(fn));
+    return std::move(builder);
+  }*/
+
+  template <class T> VM &push(const T &v) {
     to_duktape(ctx(), v);
     return *this;
   }
+
+  template <class T> VM &push(T &v) {
+    to_duktape(ctx(), v);
+    return *this;
+  }
+
+  /*emplate <class T> const VM &push(T &v) {
+    to_duktape(ctx(), v);
+    return *this;
+  }*/
+
   template <class T = Reference> T get(duk_idx_t idx = -1) const {
     T v;
     from_duktape(ctx(), idx, v);
     return std::move(v);
   }
 
-  template <class T> T pop() const {
+  template <class T> T pop()  {
     T v = get<T>(-1);
     duk_pop(ctx());
     return std::move(v);
@@ -90,11 +107,35 @@ public:
   const VM &dump() const;
 
   duk_size_t top() const;
-  const VM &pop(int count = 1) const;
-  const VM &remove(duk_idx_t idx) const;
+  const VM &pop(int count = 1) ;
+  const VM &remove(duk_idx_t idx) ;
 
 private:
   std::unique_ptr<internal::VMPrivate> d;
 };
+
+namespace details {
+
+template<>
+class Callable<std::function<duk_ret_t(VM &vm)>>: public ::strips::Callable {
+
+public:
+    Callable(std::function<duk_ret_t(VM &vm)> &&fn): m_fn(std::move(fn)) {}
+    duk_ret_t call(duk_context *ctx) const override {
+        VM vm(ctx);
+        return m_fn(vm);
+    }
+
+    duk_ret_t call(duk_context *ctx) override {
+        VM vm(ctx);
+        return m_fn(vm);
+    }
+
+
+private:
+    std::function<duk_ret_t(VM &vm)> m_fn;
+};
+
+}
 
 } // namespace strips

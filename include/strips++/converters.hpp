@@ -5,15 +5,20 @@
 #include <string>
 #include <strips/utils.h>
 #include <vector>
-
+#include <strips++/callable.hpp>
 namespace strips {
 
 class VM;
 class Object;
 class Reference;
 class Any;
+class Function;
 
 void to_duktape(duk_context *ctx, std::function<duk_ret_t(VM &)> fn);
+//void to_duktape(duk_context *ctx, std::function<duk_ret_t(const VM &)> fn);
+
+
+void to_duktape(duk_context *ctx, const char *str);
 
 void to_duktape(duk_context *ctx, duk_c_function fn);
 
@@ -106,16 +111,23 @@ void from_duktape(duk_context *ctx, duk_idx_t idx,
   }
   duk_pop(ctx);
 }
+/*
+template<class T>
+void to_duktape(duk_context *ctx, T fn) {
+  auto *call = new details::Callable<T>(std::move(fn));
+  call->push(ctx);
+}*/
 
+
+void to_duktape(duk_context *ctx, const Function &o);
+void from_duktape(duk_context *ctx, duk_idx_t idx,Function &fn);
 
 void to_duktape(duk_context *ctx, const std::map<std::string,Any> &v);
 
 void to_duktape(duk_context *ctx, const Object &o);
-
 void from_duktape(duk_context *ctx, duk_idx_t idx, Object &o);
 
 void to_duktape(duk_context *ctx, const Reference &o);
-
 void from_duktape(duk_context *ctx, duk_idx_t idx, Reference &o);
 
 

@@ -16,6 +16,7 @@ class VM;
 class Object : public Reference {
 
 public:
+  
   class iterator {
   public:
     typedef iterator self_type;
@@ -100,6 +101,12 @@ public:
     from_duktape(ctx(), -1, v);
     duk_pop_2(ctx());
     return std::move(v);
+  }
+
+  template <class T = Reference> T del(const std::string &name) const {
+    push();
+    duk_del_prop_string(ctx(), -1, name.c_str());
+    duk_pop(ctx());
   }
 
   template <typename T = Reference, typename... Args>

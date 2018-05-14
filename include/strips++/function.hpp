@@ -1,17 +1,18 @@
 #pragma once
 #include <strips++/reference.hpp>
-
+#include <strips++/function.hpp>
+#include <strips++/object.hpp>
 namespace strips {
 
-class Function : public Reference {
+class Function : public Object {
   typedef duk_ret_t (*Handle)(duk_context *ctx, duk_idx_t nargs);
 
 public:
-  Function() : Reference() {}
-  Function(duk_context *ctx) : Reference(ctx) {}
-  Function(duk_context *ctx, duk_idx_t idx) : Reference(ctx, idx) {}
-  Function(const Function &o) : Reference(o) {}
-  Function(Function &&o) : Reference(std::move(o)) {}
+  Function() : Object() {}
+  Function(duk_context *ctx) : Object(ctx) {}
+  Function(duk_context *ctx, duk_idx_t idx) : Object(ctx, idx) {}
+  Function(const Function &o) : Object(o) {}
+  Function(Function &&o) : Object(std::move(o)) {}
 
   template <class T = Reference, typename... Args>
   T call(const Reference &ref, Args &... args) {
@@ -27,6 +28,12 @@ public:
 
   template <class T = Reference, typename... Args>
   T operator()(Args &... args) {
+    push();
+    return call2(duk_pcall, std::forward<Args>(args)...);
+  }
+
+  template <class T = Reference, typename... Args>
+  T operator()(Args &... args) const {
     push();
     return call2(duk_pcall, std::forward<Args>(args)...);
   }
@@ -64,6 +71,10 @@ private:
     duk_pop(ctx());
     return std::move(v);
   }
+
+private:
+  friend void from_duktape(duk_context *ctx, duk_idx_t idx, Function &o);
+
 };
 
 } // namespace strips

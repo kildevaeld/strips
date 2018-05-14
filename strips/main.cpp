@@ -50,12 +50,30 @@ int main(int argc, char *argv[]) {
 
   auto process = vm.object({{"argv", args},
                             {"platform", cs_platform_name()},
-                            {"cwd", [](const VM &vm) {
+                            {"cwd", [](VM &vm) {
                                vm.push(csystem::standardpaths::cwd());
                                return 1;
                              }}});
 
   vm.global().set("process", process);
+
+  
+  auto ref = vm.push([](const VM &vm) {
+    vm.current_this().set("what", vm.get(0));
+    return 0;
+  }).pop<Function>();
+
+  auto proto = vm.object({
+    {"fn", [](VM &vm){
+      vm.current_this().get("what").push();
+      return 1;
+    }}
+  });
+
+  ref.set("prototype", proto);
+  
+  vm.global().set("Test", ref);
+  
 
   auto result = vm.eval_path(argv[1]);
 

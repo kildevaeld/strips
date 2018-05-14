@@ -29,7 +29,7 @@ VM::VM(duk_context *ctx) : d(new internal::VMPrivate(ctx)) {}
 
 VM::~VM() {}
 
-Reference VM::eval_path(const std::string &path) const {
+Reference VM::eval_path(const std::string &path)  {
   char *err = NULL;
   strips_eval_path(ctx(), path.c_str(), &err);
   if (err) {
@@ -40,7 +40,7 @@ Reference VM::eval_path(const std::string &path) const {
   return std::move(v);
 }
 Reference VM::eval_script(const std::string &script,
-                          const std::string &path) const {
+                          const std::string &path)  {
   char *err = NULL;
   strips_eval_script(ctx(), script.c_str(), path.c_str(), &err);
   if (err) {
@@ -50,7 +50,7 @@ Reference VM::eval_script(const std::string &script,
   duk_pop(ctx());
   return std::move(v);
 }
-Reference VM::eval(const std::string &script) const {
+Reference VM::eval(const std::string &script)  {
   duk_eval_string(ctx(), script.c_str());
   return std::move(pop<Reference>());
 }
@@ -73,7 +73,7 @@ Array VM::array() const {
 
 static duk_ret_t class_ctor(duk_context *ctx) { return 0; }
 
-Function VM::ctor(const Object &o) const {
+/*Function VM::ctor(const Object &o) const {
 
   if (o.has("constructor")) {
     o.get("constructor").push();
@@ -91,7 +91,7 @@ Function VM::ctor(const Object &o) const {
   duk_pop(ctx());
 
   return std::move(fn);
-}
+}*/
 
 Object VM::global() const {
   duk_push_global_object(ctx());
@@ -118,7 +118,7 @@ const VM &VM::dump() const {
 
 duk_size_t VM::top() const { return duk_get_top(d->ctx); }
 
-const VM &VM::pop(int count) const {
+const VM &VM::pop(int count)  {
   if (count == 0)
     return *this;
   duk_pop_n(ctx(), count);
@@ -126,7 +126,7 @@ const VM &VM::pop(int count) const {
   return *this;
 }
 
-const VM &VM::remove(duk_idx_t idx) const {
+const VM &VM::remove(duk_idx_t idx)  {
   duk_remove(ctx(), idx);
   return *this;
 }
