@@ -1,7 +1,11 @@
 const exec = require('exec'),
     io = require('io'),
     prompt = require('prompt'),
-    util = require('util');
+    util = require('util'),
+    os = require('os');
+
+
+console.log(os.env.PATH)
 
 const flags = util.flags(process.argv.slice(1), {
     name: {

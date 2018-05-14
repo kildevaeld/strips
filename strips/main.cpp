@@ -5,6 +5,7 @@
 #include <strips/curl/curl.h>
 #include <strips/exec/exec.h>
 #include <strips/io/io.h>
+#include <strips/os/os.h>
 
 using namespace strips;
 namespace tem {
@@ -42,6 +43,7 @@ int main(int argc, char *argv[]) {
   strips_io_init(vm.ctx());
   strips_curl_init(vm.ctx());
   strips_exec_init(vm.ctx());
+  strips_os_init(vm.ctx(), argc, argv, NULL);
 
   std::vector<std::string> args(argv + 1, argv + argc);
   args[0] = csystem::path::join(csystem::standardpaths::cwd(), args[0]);

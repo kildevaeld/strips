@@ -16,6 +16,7 @@ set(SOURCES
     path/path.c
     exec/exec.c
     prompt/prompt.c
+    os/os.c
 
 )
 
