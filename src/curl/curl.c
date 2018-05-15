@@ -1,4 +1,4 @@
-//#include "../script-data.h"
+#include "../script-data.h"
 #include <curl/curl.h>
 #include <strips/curl/curl.h>
 #include <strips/modules.h>
@@ -30,7 +30,7 @@ static duk_ret_t strips_curl_module(duk_context *ctx) {
   strips_curl_push_curl_request(ctx);
   duk_put_prop_string(ctx, -2, "req");
 
-  /*duk_commonjs_wrapl(ctx, (const char *)curl_js, curl_js_len);
+  duk_commonjs_wrapl(ctx, (const char *)curl_js, curl_js_len);
   duk_dup(ctx, -2);
   duk_get_global_string(ctx, "require");
 
@@ -38,7 +38,7 @@ static duk_ret_t strips_curl_module(duk_context *ctx) {
 
   if (ret != DUK_EXEC_SUCCESS) {
     duk_throw(ctx);
-  }*/
+  }
 
   duk_pop(ctx);
 

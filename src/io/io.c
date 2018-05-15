@@ -1,5 +1,5 @@
 #include "../private.h"
-//#include "../script-data.h"
+#include "../script-data.h"
 #include <strips/io/io.h>
 #include <strips/modules.h>
 #include <strips/types.h>
@@ -108,7 +108,7 @@ static duk_ret_t strips_io_module_init(duk_context *ctx) {
   duk_push_int(ctx, SEEK_END);
   duk_put_prop_string(ctx, -2, "SEEK_END");
 
-  /*duk_get_prop_string(ctx, -1, "File");
+  duk_get_prop_string(ctx, -1, "File");
   duk_push_int(ctx, STDOUT_FILENO);
   duk_new(ctx, 1);
   duk_put_prop_string(ctx, -2, "stdout");
@@ -133,7 +133,7 @@ static duk_ret_t strips_io_module_init(duk_context *ctx) {
     duk_throw(ctx);
   }
 
-  duk_pop(ctx);*/
+  duk_pop(ctx);
 
   return 1;
 }

@@ -20,7 +20,7 @@ static size_t curl_request_write_cb(char *ptr, size_t size, size_t nmemb,
   duk_push_ref(mem->ctx, mem->ref);
 
   if (duk_is_dynamic_buffer(mem->ctx, -1)) {
-    mem->data = duk_resize_buffer(mem->ctx, -1, mem->size + realsize + 1);
+    mem->data = duk_resize_buffer(mem->ctx, -1, mem->size + realsize);
     duk_pop(mem->ctx);
     if (mem->data == NULL) {
 
@@ -30,7 +30,7 @@ static size_t curl_request_write_cb(char *ptr, size_t size, size_t nmemb,
 
     memcpy(&(mem->data[mem->size]), ptr, realsize);
     mem->size += realsize;
-    ((char *)mem->data)[mem->size] = 0;
+    //((char *)mem->data)[mem->size] = 0;
   } else if (duk_is_function(mem->ctx, -1)) {
     char *buf = duk_push_fixed_buffer(mem->ctx, realsize);
     memcpy(buf, ptr, realsize);

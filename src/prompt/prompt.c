@@ -1,6 +1,6 @@
-#include "prompt.h"
 #include <csystem/terminal/form.h>
 #include <strips/modules.h>
+#include <strips/prompt/prompt.h>
 
 static duk_ret_t de_prompt_list(duk_context *ctx) {
   const char *msg = duk_require_string(ctx, 0);

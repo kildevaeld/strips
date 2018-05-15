@@ -6,6 +6,8 @@
 #include <strips/exec/exec.h>
 #include <strips/io/io.h>
 #include <strips/os/os.h>
+#include <strips/path/path.h>
+#include <strips/prompt/prompt.h>
 
 using namespace strips;
 namespace tem {
@@ -40,6 +42,8 @@ int main(int argc, char *argv[]) {
   }
 
   VM vm;
+  strips_path_init(vm.ctx());
+  strips_prompt_init(vm.ctx());
   strips_io_init(vm.ctx());
   strips_curl_init(vm.ctx());
   strips_exec_init(vm.ctx());

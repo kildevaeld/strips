@@ -1,5 +1,5 @@
-#include "path.h"
 #include <csystem/path.h>
+#include <strips/path/path.h>
 
 static duk_ret_t duk_path_join(duk_context *ctx) {
   int len = duk_get_top(ctx);

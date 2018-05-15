@@ -1,8 +1,8 @@
 #include <curl/curl.h>
-#include <strips/io/io.h>
-#include <strips/utils.h>
 #include <duktape.h>
 #include <stdbool.h>
+#include <strips/io/io.h>
+#include <strips/utils.h>
 
 static duk_ret_t curl_request_dtor(duk_context *ctx) {
 
@@ -84,11 +84,11 @@ static bool validate_options(duk_context *ctx, char **err) {
 }
 
 static duk_ret_t curl_request_ctor(duk_context *ctx) {
-  
+
   if (!duk_is_constructor_call(ctx)) {
     return DUK_RET_TYPE_ERROR;
   }
-  
+
   duk_push_this(ctx);
   if (duk_is_object(ctx, 0)) {
     char *err = NULL;
@@ -138,6 +138,8 @@ static duk_ret_t curl_request_set(duk_context *ctx) {
   }
 
   duk_pop_2(ctx);
+
+  return 1;
 }
 
 static duk_ret_t curl_request_get(duk_context *ctx) {
