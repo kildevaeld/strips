@@ -58,56 +58,66 @@ int main(int argc, char *argv[]) {
   vm.global().set("process", process);
 
   auto super = vm.push([](const VM &vm) {
-    return 0;
-  }).pop<Function>();
+                   std::cout << "super" << std::endl;
+                   vm.get_this().push();
+                   vm.dump();
+                   return 0;
+                 })
+                   .pop<Function>();
 
-  super.prototype({
-    {"fn1", [](VM &vm){
-      vm.push(232323);
-      return 1;
-    }}
-  });
+  super.prototype({{"fn1", [](VM &vm) {
+                      vm.push(232323);
+                      return 1;
+                    }}});
 
-  
-  auto ref = vm.push([]( VM &vm) {
-    auto self = vm.current_function();
-    //duk_get_prop_string(vm.ctx(), -1, "Super");
-    //vm.dump();
-    vm.current_function().get<Function>("Super").push();
-    vm.current_this().push();
-    duk_call_method(vm.ctx(), 0);
-   //vm.pop(1);
-    
-    //std::cout << vm.current_function() << std::endl;
-    //std::cout << "Top " << vm.top() << vm.current_function().get<Function>("Super") << std::endl;
-    vm.current_this().set("what", vm.get(0));
-    return 0;
-  }).pop<Function>();
+  auto ref =
+      vm.push([](VM &vm) {
+          auto self = vm.current_function();
+          // duk_get_prop_string(vm.ctx(), -1, "Super");
+          // vm.dump();
+          /*vm.current_function().get<Function>("Super").push();
+          vm.get_this().push();
+          duk_call_method(vm.ctx(), 0);*/
+
+          vm.current_function().get<Function>("Super").call(vm.get_this());
+
+          // vm.current_function().get<Function>("Super").push();
+          // vm.get_this().push();
+          // duk_call_method(vm.ctx(), 0);
+
+          // vm.pop(1);
+
+          // std::cout << vm.current_function() << std::endl;
+          // std::cout << "Top " << vm.top() <<
+          // vm.current_function().get<Function>("Super") <<
+          // std::endl;
+          vm.get_this().set("what", vm.get(0));
+          return 0;
+        })
+          .pop<Function>();
 
   ref.inherit(super);
 
   /*ref.prototype({
     {"fn", [](VM &vm){
-      vm.current_this().get("what").push();
+      vm.get_this().get("what").push();
       return 1;
     }}
   });*/
-  ref.prototype().set("fn", [](VM &vm){
-      vm.current_this().get("what").push();
-      return 1;
-    });
-  
-  
+  ref.prototype().set("fn", [](VM &vm) {
+    vm.get_this().get("what").push();
+    return 1;
+  });
 
   /*auto proto = vm.object({
     {"fn", [](VM &vm){
-      vm.current_this().get("what").push();
+      vm.get_this().get("what").push();
       return 1;
     }}
   });*/
 
-  //ref.set("prototype", proto);
-  
+  // ref.set("prototype", proto);
+
   vm.global().set("Test", ref);
   vm.global().set("Super", super);
   vm.global().set("Fn", [](VM &vm) {
@@ -116,7 +126,6 @@ int main(int argc, char *argv[]) {
   });
 
   auto result = vm.eval_path(argv[1]);
-  
 
   /*if (!result.is<Type::Invalid>()) {
     std::cout << result << s  td::endl;

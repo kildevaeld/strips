@@ -112,7 +112,7 @@ ReferencePrivate *ReferencePrivate::clone() const {
   duk_pop_2(ctx);
   return out;
 }
-bool ReferencePrivate::valid() const { return ctx != NULL && ref > 0; }
+bool ReferencePrivate::valid() const { return ctx != NULL; }
 } // namespace internal
 Reference::Reference() : ptr(new internal::ReferencePrivate()) {}
 Reference::Reference(duk_context *ctx)

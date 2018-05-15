@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <strips++/reference.hpp>
+#include <strips++/types.hpp>
 #include <strips++/utils.hpp>
 #include <strips/utils.h>
 #include <vector>
@@ -16,7 +17,6 @@ class VM;
 class Object : public Reference {
 
 public:
-  
   class iterator {
   public:
     typedef iterator self_type;
@@ -90,6 +90,7 @@ public:
     duk_pop(ctx());
   }
 
+  
   template <class T = Reference> T get(const std::string &name) const {
     push();
     T v;
@@ -108,6 +109,11 @@ public:
     duk_del_prop_string(ctx(), -1, name.c_str());
     duk_pop(ctx());
   }
+
+  /*void set_finalizer(Callback cb) {
+    push();
+    to_duktape(ctx(), cb);
+  }*/
 
   template <typename T = Reference, typename... Args>
   T call(const std::string &prop, const Args &... args) {

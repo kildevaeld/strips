@@ -3,6 +3,8 @@ project(strips)
 
 set(CMAKE_CXX_STANDARD 14)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
 include_directories(
     include 
     vendor/duktape-2.2.1/src
@@ -20,10 +22,9 @@ add_subdirectory(src/io)
 add_subdirectory(src/curl)
 add_subdirectory(src/filesystem)
 
-add_subdirectory(strips)
 
 
-
-include(CTest)
-add_subdirectory(vendor/unity)
-add_subdirectory(test)
+#add_subdirectory(strips)
+#include(CTest)
+#add_subdirectory(vendor/unity)
+#add_subdirectory(test)

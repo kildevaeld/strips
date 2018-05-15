@@ -10,10 +10,10 @@ void duk_dump_context_stdout(duk_context *ctx) {
 // like luaL_ref, but assumes storage in "refs" property of heap stash
 int duk_ref(duk_context *ctx) {
   int ref;
-  /*if (duk_is_undefined(ctx, -1)) {
+  if (duk_is_undefined(ctx, -1)) {
     duk_pop(ctx);
     return 0;
-  }*/
+  }
   // Get the "refs" array in the heap stash
   if (!strips_get_entry(ctx, "refs")) {
     return 0;

@@ -85,6 +85,7 @@ public:
     duk_pop(ctx());
   }
 
+  
   template <class T = Reference> T index(size_t idx) {
     if (idx > size()) {
       throw std::runtime_error("overflow");
@@ -112,6 +113,8 @@ public:
 
   iterator begin() { return iterator(this); }
   iterator end() { return iterator(nullptr); }
+
+  bool valid() const override { return type() == Type::Array; }
 
   friend std::ostream &operator<<(std::ostream &s, const Array &);
 };

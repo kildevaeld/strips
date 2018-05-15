@@ -20,9 +20,9 @@ public:
   VM(const VM &) = delete;
   ~VM();
 
-  Reference eval_path(const std::string &) ;
-  Reference eval_script(const std::string &, const std::string &) ;
-  Reference eval(const std::string &) ;
+  Reference eval_path(const std::string &);
+  Reference eval_script(const std::string &, const std::string &);
+  Reference eval(const std::string &);
 
   duk_context *ctx() const;
 
@@ -80,13 +80,13 @@ public:
     return std::move(v);
   }
 
-  template <class T> T pop()  {
+  template <class T> T pop() {
     T v = get<T>(-1);
     duk_pop(ctx());
     return std::move(v);
   }
 
-  template <class T = Object> T current_this() const {
+  template <class T = Object> T get_this() const {
     duk_push_this(ctx());
     T v = get<T>(-1);
     duk_pop(ctx());
@@ -107,8 +107,8 @@ public:
   const VM &dump() const;
 
   duk_size_t top() const;
-  VM &pop(int count = 1) ;
-  VM &remove(duk_idx_t idx) ;
+  VM &pop(int count = 1);
+  VM &remove(duk_idx_t idx);
 
 private:
   std::unique_ptr<internal::VMPrivate> d;
@@ -116,26 +116,25 @@ private:
 
 namespace details {
 
-template<>
-class Callable<std::function<duk_ret_t(VM &vm)>>: public ::strips::Callable {
+template <>
+class Callable<std::function<duk_ret_t(VM &vm)>> : public ::strips::Callable {
 
 public:
-    Callable(std::function<duk_ret_t(VM &vm)> &&fn): m_fn(std::move(fn)) {}
-    duk_ret_t call(duk_context *ctx) const override {
-        VM vm(ctx);
-        return m_fn(vm);
-    }
+  Callable(std::function<duk_ret_t(VM &vm)> &&fn) : m_fn(std::move(fn)) {}
+  duk_ret_t call(duk_context *ctx) const override {
+    VM vm(ctx);
+    return m_fn(vm);
+  }
 
-    duk_ret_t call(duk_context *ctx) override {
-        VM vm(ctx);
-        return m_fn(vm);
-    }
-
+  duk_ret_t call(duk_context *ctx) override {
+    VM vm(ctx);
+    return m_fn(vm);
+  }
 
 private:
-    std::function<duk_ret_t(VM &vm)> m_fn;
+  std::function<duk_ret_t(VM &vm)> m_fn;
 };
 
-}
+} // namespace details
 
 } // namespace strips
