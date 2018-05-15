@@ -11,6 +11,6 @@ add_executable(stripsbin2 main.cpp)
 target_link_libraries(stripsbin2 strips strips++ strips-io strips-curl strips-fs csystem++)
 
 set_target_properties(stripsbin2 PROPERTIES 
-    OUTPUT_NAME "strips2"
+    OUTPUT_NAME "zap"
 )
 
