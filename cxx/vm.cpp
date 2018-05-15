@@ -118,7 +118,7 @@ const VM &VM::dump() const {
 
 duk_size_t VM::top() const { return duk_get_top(d->ctx); }
 
-const VM &VM::pop(int count)  {
+ VM &VM::pop(int count)  {
   if (count == 0)
     return *this;
   duk_pop_n(ctx(), count);
@@ -126,7 +126,7 @@ const VM &VM::pop(int count)  {
   return *this;
 }
 
-const VM &VM::remove(duk_idx_t idx)  {
+ VM &VM::remove(duk_idx_t idx)  {
   duk_remove(ctx(), idx);
   return *this;
 }

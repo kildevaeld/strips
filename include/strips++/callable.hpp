@@ -42,6 +42,7 @@ public:
         duk_push_current_function(ctx);
         duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("fn"));
         Callable *call = (Callable*)duk_get_pointer(ctx, -1);
+        duk_pop_2(ctx);
         duk_ret_t ret;
         try {
             ret = call->call(ctx);

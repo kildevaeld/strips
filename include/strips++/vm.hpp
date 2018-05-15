@@ -107,8 +107,8 @@ public:
   const VM &dump() const;
 
   duk_size_t top() const;
-  const VM &pop(int count = 1) ;
-  const VM &remove(duk_idx_t idx) ;
+  VM &pop(int count = 1) ;
+  VM &remove(duk_idx_t idx) ;
 
 private:
   std::unique_ptr<internal::VMPrivate> d;

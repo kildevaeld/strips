@@ -7,7 +7,7 @@ const exec = require('exec'),
 
 var test = new Test("World");
 
-console.log('Hello,', test.fn());
+console.log('Hello,', test.fn(), test.fn1(), Test.Super === Super);
 
 const flags = util.flags(process.argv.slice(1), {
     name: {

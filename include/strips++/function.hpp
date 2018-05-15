@@ -38,6 +38,54 @@ public:
     return call2(duk_pcall, std::forward<Args>(args)...);
   }
 
+  Object prototype() const {
+    push();
+    duk_get_prop_string(ctx(), -1, "prototype");
+    Object obj(ctx(), -1);
+    duk_pop_2(ctx());
+    return std::move(obj);
+  }
+
+  void prototype(const std::map<std::string, Any> &m)  {
+    push();
+    to_duktape(ctx(), m);
+    duk_put_prop_string(ctx(), -2, "prototype");
+    duk_pop(ctx());
+  }
+
+  void inherit(const Function &m) const {
+    push();
+    if (duk_has_prop_string(ctx(), -1, "Super")) {
+      duk_pop(ctx());
+      throw std::runtime_error("already have a super");
+    }
+
+    duk_get_global_string(ctx(), "Object");
+    duk_push_string(ctx(),"create");
+    m.prototype().push();
+    duk_ret_t ret = duk_pcall_prop(ctx(), -3, 1);
+    if (ret != DUK_EXEC_SUCCESS) {
+      const char *str = NULL;
+      if (duk_has_prop_string(ctx(), -1, "stack")) {
+        duk_get_prop_string(ctx(), -1, "stack");
+        str = duk_get_string(ctx(), -1);
+      } else {
+        duk_get_prop_string(ctx(), -1, "message");
+        str = duk_get_string(ctx(), -1);
+      }
+      duk_pop_3(ctx());
+      throw std::runtime_error(str);
+    }
+    
+    duk_put_prop_string(ctx(), -3, "prototype");
+    
+    m.push();
+    duk_put_prop_string(ctx(), -3, "Super");
+
+    duk_pop_2(ctx());
+
+  }
+
 private:
   template <class T = Object, typename... Args>
   T call2(Handle hnd, const Args &... args) {
