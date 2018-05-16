@@ -10,4 +10,4 @@ set(SOURCES
 )
 
 add_library(strips-curl ${SOURCES})
-target_link_libraries(strips-curl strips strips-io curl)
+target_link_libraries(strips-curl strips curl)

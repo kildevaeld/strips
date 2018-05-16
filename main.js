@@ -5,9 +5,10 @@ const exec = require('exec'),
     os = require('os');
 
 
-var test = new Test("World");
+os.readdir(".", function (file) {
 
-console.log('Hello,', test.fn(), test.fn1(), Test.Super === Super);
+});
+
 
 const flags = util.flags(process.argv.slice(1), {
     name: {

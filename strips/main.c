@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <strips/curl/curl.h>
 #include <strips/exec/exec.h>
-#include <strips/filesystem/filesystem.h>
+//#include <strips/filesystem/filesystem.h>
 #include <strips/io/io.h>
 
 // Run a single file, one time
@@ -27,7 +27,7 @@ static int run_single(const char *path) {
 
   strips_io_init(ctx);
   strips_curl_init(ctx);
-  strips_filesystem_init(ctx);
+  // strips_filesystem_init(ctx);
   strips_exec_init(ctx);
 
   char *err = NULL;

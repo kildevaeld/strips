@@ -17,6 +17,12 @@ set(SOURCES
     exec/exec.c
     prompt/prompt.c
     os/os.c
+    os/env.c
+    os/dir.c
+    io/io.c
+    io/file.c
+    io/reader.c
+    io/writer.c
 
 )
 

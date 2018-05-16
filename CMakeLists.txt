@@ -5,6 +5,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 option(STRIPS_BUILD_CLI "build cli" off)
 option(STRIPS_BUILD_CXX "build c++" off)
+option(STRIPS_BUILD_CURL "build curl" off)
 
 include_directories(
     include 
@@ -15,6 +16,7 @@ include_directories(
 
 if(STRIPS_BUILD_CLI)
     set(STRIPS_BUILD_CXX on)
+    set(STRIPS_BUILD_CURL on)
 endif(STRIPS_BUILD_CLI)
 
 set(CS_BUILD_TERMINAL on)
@@ -25,9 +27,11 @@ add_subdirectory(vendor/csystem)
 
 add_subdirectory(src)
 
-add_subdirectory(src/io)
-add_subdirectory(src/curl)
-add_subdirectory(src/filesystem)
+#add_subdirectory(src/io)
+if(STRIPS_BUILD_CURL)
+    add_subdirectory(src/curl)
+endif(STRIPS_BUILD_CURL)
+#add_subdirectory(src/filesystem)
 
 
 if(STRIPS_BUILD_CXX)
