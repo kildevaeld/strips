@@ -12,6 +12,13 @@ exports.readFile = function readFile(path, encoding) {
     }
     return buf;
 };
+exports.writeFile = function writeFile(path, input, mod) {
+    if (mod === void 0) {
+        mod = "wb";
+    }
+    var file = new exports.File(path, mod);
+    file.write(input);
+};
 exports.readline = function readline(reader) {
     var out = [];
     console.log('reader', reader);

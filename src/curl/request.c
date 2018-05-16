@@ -60,7 +60,7 @@ static bool validate_options(duk_context *ctx, char **err) {
   if (duk_has_prop_string(ctx, 0, "data")) {
     duk_get_prop_string(ctx, 0, "data");
     if (!duk_is_buffer(ctx, -1) && !duk_is_string(ctx, -1) &&
-        !duk_io_is_reader(ctx, -1)) {
+        !duk_io_is_readerlike(ctx, -1)) {
       duk_pop(ctx);
       *err = "progress should be a buffer, string or a reader";
       return false;

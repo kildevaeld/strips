@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <strips/io/io.h>
 #include <strips/utils.h>
@@ -38,7 +39,7 @@ static duk_ret_t duk_io_file_ctor(duk_context *ctx) {
   if (duk_is_number(ctx, 0)) {
     int fd = duk_get_int(ctx, 0);
 
-    if (fd == STDOUT_FILENO || fd == STDERR_FILENO) {
+    if (fd == STDOUT_FILENO || fd == STDERR_FILENO || fd == STDIN_FILENO) {
       file = fd == STDOUT_FILENO ? stdout : stderr;
     } else {
       file = fdopen(fd, "w+");
@@ -87,7 +88,7 @@ static duk_ret_t duk_io_file_read(duk_context *ctx) {
 }
 
 static duk_ret_t duk_io_file_write(duk_context *ctx) {
-  void *data;
+  void *data = NULL;
   duk_size_t size;
 
   if (duk_is_buffer(ctx, 0)) {
@@ -99,11 +100,15 @@ static duk_ret_t duk_io_file_write(duk_context *ctx) {
     size = duk_get_length(ctx, 0);
   }
 
+  if (!data) {
+    duk_type_error(ctx, "invalid input");
+  }
+
   PUSH_FILE
 
   fwrite(data, size, 1, file);
   if (ferror(file) != 0) {
-    duk_type_error(ctx, "could not write to file");
+    duk_type_error(ctx, "could not write to file: %s", strerror(errno));
   }
 
   duk_push_this(ctx);

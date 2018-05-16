@@ -14,6 +14,11 @@ exports.readFile = function readFile(path: string, encoding: 'utf-8' | 'utf8' | 
     return buf;
 };
 
+exports.writeFile = function writeFile(path: string, input: Buffer | Uint8Array | string, mod = "wb") {
+    const file = new exports.File(path, mod);
+    file.write(input);
+}
+
 exports.readline = function readline(reader: any) {
     var out = [];
     console.log('reader', reader)
