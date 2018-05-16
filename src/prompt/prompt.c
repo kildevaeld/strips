@@ -72,7 +72,7 @@ static duk_ret_t duk_prompt_module(duk_context *ctx) {
   duk_push_c_function(ctx, de_prompt_input, 2);
   duk_put_prop_string(ctx, -2, "input");
 
-  duk_push_c_function(ctx, de_prompt_input, 2);
+  duk_push_c_function(ctx, de_prompt_password, 2);
   duk_put_prop_string(ctx, -2, "password");
 
   return 1;
