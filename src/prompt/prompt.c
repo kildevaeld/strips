@@ -51,6 +51,16 @@ duk_ret_t de_prompt_input(duk_context *ctx) {
   return 1;
 }
 
+duk_ret_t de_prompt_password(duk_context *ctx) {
+  const char *msg = duk_require_string(ctx, 0);
+
+  char *ret = cs_term_form_password(msg, NULL);
+  duk_push_string(ctx, ret);
+  free(ret);
+
+  return 1;
+}
+
 static duk_ret_t duk_prompt_module(duk_context *ctx) {
   duk_push_object(ctx);
   duk_push_c_function(ctx, de_prompt_list, 2);
@@ -61,6 +71,10 @@ static duk_ret_t duk_prompt_module(duk_context *ctx) {
 
   duk_push_c_function(ctx, de_prompt_input, 2);
   duk_put_prop_string(ctx, -2, "input");
+
+  duk_push_c_function(ctx, de_prompt_input, 2);
+  duk_put_prop_string(ctx, -2, "password");
+
   return 1;
 }
 

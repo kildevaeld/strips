@@ -1,12 +1,12 @@
 const io = require('io'),
-    fs = require('filesystem'),
+    os = require('os'),
     path = require("path"),
     exec = require('exec').exec
 
 //const templatePath = path.join(__dirname, "../js");
 const templatePath = path.join(__dirname, "../runtime/dist");
 const fileData = []
-fs.readdir(templatePath, function (fileName) {
+os.readdir(templatePath, function (fileName) {
     const full = path.join(templatePath, fileName);
 
     const file = new io.File(full);
