@@ -124,10 +124,18 @@ static size_t curl_read_cb(char *buffer, size_t size, size_t nitems, void *p) {
     return read_l;
 
   } else {
-    duk_push_string(ctx, "read");
+
+    duk_get_prop_string(ctx, -1, "read");
+
+    duk_dup(ctx, -2);
+
     duk_push_number(ctx, (duk_double_t)buffer_size);
 
-    duk_call_prop(ctx, -3, 1);
+    duk_pcall_method(ctx, 1);
+    /*duk_push_string(ctx, "read");
+    duk_push_number(ctx, (duk_double_t)buffer_size);
+
+    duk_call_prop(ctx, -3, 1);*/
 
     if (duk_is_null_or_undefined(ctx, -1)) {
       duk_pop(ctx);

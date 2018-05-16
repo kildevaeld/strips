@@ -1,25 +1,15 @@
-const exec = require('exec'),
-    io = require('io'),
-    prompt = require('prompt'),
-    util = require('util'),
-    os = require('os');
+const curl = require('curl'),
+    io = require('io');
+
+const decoder = new TextDecoder('utf8');
+
+const resp = curl.get('http://localhost:3000');
+
+console.log(decoder.decode(resp.body));
 
 
-os.readdir(".", function (file) {
+const file = new io.File(__filename);
 
+curl.post('http://localhost:3000/post', {
+    data: file
 });
-
-
-const flags = util.flags(process.argv.slice(1), {
-    name: {
-        type: "string",
-        alias: 'n'
-    }
-});
-
-console.log(flags, process.cwd());
-
-//prompt.list('Name:', ['choud', 'moud']);
-
-
-//console.log(new TextDecoder().decode(out))

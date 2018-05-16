@@ -1,0 +1,17 @@
+{
+  "name": "test-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/koa": "^2.0.45",
+    "@types/koa-router": "^7.0.28",
+    "koa": "^2.5.1",
+    "koa-router": "^7.4.0"
+  }
+}

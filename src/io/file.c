@@ -80,10 +80,11 @@ static duk_ret_t duk_io_file_read(duk_context *ctx) {
 
   fseek(file, offs, SEEK_SET);
   void *ptr = duk_push_dynamic_buffer(ctx, len);
-  int re = fread(ptr, len, 1, file);
+  int re = fread(ptr, 1, len, file);
   if (re != len) {
-    ptr = duk_resize_buffer(ctx, -1, re * len);
+    ptr = duk_resize_buffer(ctx, -1, re);
   }
+
   return 1;
 }
 
@@ -106,7 +107,7 @@ static duk_ret_t duk_io_file_write(duk_context *ctx) {
 
   PUSH_FILE
 
-  fwrite(data, size, 1, file);
+  fwrite(data, 1, size, file);
   if (ferror(file) != 0) {
     duk_type_error(ctx, "could not write to file: %s", strerror(errno));
   }
