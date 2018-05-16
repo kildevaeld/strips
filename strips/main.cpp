@@ -34,11 +34,21 @@ void from_duktape(const VM &ctx, duk_idx_t idx, Data &data) {
 
 } // namespace tem
 
+static int print_help(int ret = 0) {
+  std::cout << "usage: strips2 <path>" << std::endl;
+  return ret;
+}
+
 int main(int argc, char *argv[]) {
 
+  std::vector<std::string> args(argv + 1, argv + argc);
+
   if (argc < 2) {
-    std::cerr << "usage: strips2 <path>" << std::endl;
-    return 1;
+    return print_help(1);
+  } else if (args[0] == "-h" || args[0] == "--help") {
+    return print_help();
+  } else if (args[0][0] == '-') {
+    return print_help(1);
   }
 
   VM vm;
@@ -49,7 +59,6 @@ int main(int argc, char *argv[]) {
   strips_exec_init(vm.ctx());
   strips_os_init(vm.ctx(), argc, argv, NULL);
 
-  std::vector<std::string> args(argv + 1, argv + argc);
   args[0] = csystem::path::join(csystem::standardpaths::cwd(), args[0]);
 
   auto process = vm.object({{"argv", args},
@@ -61,7 +70,12 @@ int main(int argc, char *argv[]) {
 
   vm.global().set("process", process);
 
-  auto result = vm.eval_path(argv[1]);
+  try {
+    auto result = vm.eval_path(argv[1]);
+  } catch (const std::runtime_error &e) {
+    std::cerr << "could execute javascript: " << e.what() << std::endl;
+    return 3;
+  }
 
   /*if (!result.is<Type::Invalid>()) {
     std::cout << result << s  td::endl;
