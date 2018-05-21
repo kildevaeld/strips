@@ -1,4 +1,6 @@
 #include <csystem/csystem++.hpp>
+#include <csystem/file.h>
+#include <csystem/path.h>
 #include <iostream>
 #include <strips++/value.hpp>
 #include <strips++/vm.hpp>
@@ -70,11 +72,24 @@ int main(int argc, char *argv[]) {
 
   vm.global().set("process", process);
 
+  std::string fname = argv[1];
+  int idx;
+  if (!cs_file_exists(argv[1]) && cs_path_ext(argv[1], &idx) == 0) {
+    fname = fname + ".js";
+    if (!cs_file_exists(fname.c_str())) {
+      std::cerr << "File not found" << std::endl;
+      return 3;
+    }
+  } else {
+    std::cerr << "File not found " << cs_path_ext(argv[1], &idx) << std::endl;
+    return 3;
+  }
+
   try {
     auto result = vm.eval_path(argv[1]);
   } catch (const std::runtime_error &e) {
     std::cerr << "could execute javascript: " << e.what() << std::endl;
-    return 3;
+    return 4;
   }
 
   /*if (!result.is<Type::Invalid>()) {
