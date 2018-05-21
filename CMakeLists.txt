@@ -11,6 +11,9 @@ include_directories(
     include 
     vendor/duktape-2.2.1/src
     vendor/csystem/include
+    vendor/syrup-path/include
+    vendor/syrup-term/include
+    vendor/syrup-term/vendor/syrup-buffer/include
     vendor/which
 )
 
@@ -23,8 +26,11 @@ set(CS_BUILD_TERMINAL on)
 if (STRIPS_BUILD_CXX)
    set(CS_BUILD_CXX on)
 endif(STRIPS_BUILD_CXX)
-add_subdirectory(vendor/csystem)
 
+
+add_subdirectory(vendor/csystem)
+add_subdirectory(vendor/syrup-path)
+add_subdirectory(vendor/syrup-term)
 add_subdirectory(src)
 
 #add_subdirectory(src/io)
@@ -35,8 +41,8 @@ endif(STRIPS_BUILD_CURL)
 
 
 if(STRIPS_BUILD_CXX)
-    set(CMAKE_CXX_STANDARD 14)
-    add_subdirectory(cxx)
+    #set(CMAKE_CXX_STANDARD 14)
+    #add_subdirectory(cxx)
 endif(STRIPS_BUILD_CXX)
 
 if (STRIPS_BUILD_CLI)

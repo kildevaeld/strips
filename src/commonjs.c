@@ -1,9 +1,9 @@
 #include "commonjs.h"
 #include "private.h"
-#include <csystem/path.h>
 #include <stdbool.h>
 #include <strips/modules.h>
 #include <strips/utils.h>
+#include <syrup/path.h>
 
 static duk_ret_t strips__resolve_module(duk_context *ctx, void *udata);
 static duk_ret_t strips__load_module(duk_context *ctx, void *udata);
@@ -225,7 +225,7 @@ static duk_int_t strips__eval_module_source(duk_context *ctx, void *udata) {
   duk_dup(ctx, -5);                               /* module */
   (void)duk_get_prop_string(ctx, -6, "filename"); /* __filename */
   const char *file = duk_get_string(ctx, -1);
-  int i = cs_path_dir(file);
+  int i = sy_path_dir(file);
   duk_push_lstring(ctx, file, i);
   // duk_push_undefined(ctx);                        /* __dirname */
   duk_call(ctx, 5);
@@ -306,17 +306,17 @@ static duk_ret_t strips__resolve_module(duk_context *ctx, void *udata) {
     printf("is protocol");
   } else if (require_type_check(ctx, "file")) {
 
-    if (!cs_path_is_abs(module_id)) {
+    if (!sy_path_is_abs(module_id)) {
       if (strlen(parent_id) == 0) {
         parent_id = duk_get_main(ctx);
       }
 
-      int dl = cs_path_dir(parent_id);
+      int dl = sy_path_dir(parent_id);
       char parent_path[dl + 1];
       strncpy(parent_path, parent_id, dl);
       parent_path[dl] = '\0';
 
-      char *full_file = cs_path_join(NULL, parent_path, module_id, NULL);
+      char *full_file = sy_path_join(NULL, parent_path, module_id, NULL);
 
       if (!full_file) {
         duk_type_error(ctx, "error");

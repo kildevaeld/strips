@@ -1,10 +1,10 @@
 #include "commonjs_file.h"
 #include <csystem/features.h>
-#include <csystem/file.h>
-#include <csystem/path.h>
+#include "file-utils.h"
 #include <dlfcn.h>
 #include <strips/definitions.h>
 #include <strips/utils.h>
+#include <syrup/path.h>
 
 #ifdef CS_PLATFORM_DARWIN
 #define CS_LIBRARY_EXT ".dylib"
@@ -13,8 +13,8 @@
 #endif
 
 static bool cs_is_dll(const char *filename) {
-  int iexts;
-  cs_path_ext(filename, &iexts);
+  size_t iexts;
+  sy_path_ext(filename, &iexts);
   return strcmp(filename + iexts, CS_DLL_EXTENSION) == 0;
 }
 
@@ -25,14 +25,14 @@ static bool file_exists(char *buffer, size_t len, const char *ext) {
   if (!cs_file_exists(buffer)) {
     char buf[len + elen + 4 + 1];
 
-    int bidx, didx;
+    size_t bidx, didx;
 
-    int blen = cs_path_base(buffer, &bidx);
+    int blen = sy_path_base(buffer, &bidx);
     if (blen == 0) {
       return false;
     }
 
-    didx = cs_path_dir(buffer);
+    didx = sy_path_dir(buffer);
     memcpy(buf, buffer, didx);
     memcpy(buf + didx, "/lib", 4);
     memcpy(buf + didx + 4, buffer + bidx, blen);
@@ -54,8 +54,8 @@ duk_ret_t cjs_resolve_file(duk_context *ctx) {
 
   duk_idx_t array = duk_push_array(ctx);
 
-  int ext_idx = -1;
-  int len = cs_path_ext(full_file, &ext_idx);
+  size_t ext_idx = -1;
+  int len = sy_path_ext(full_file, &ext_idx);
 
   int al = 0;
   if (len == 0) {
@@ -94,7 +94,7 @@ static duk_ret_t load_javascript(duk_context *ctx, void *udata) {
   if (len == 0)
     duk_type_error(ctx, "could not read %s", file);
 
-  int dlen = cs_path_dir(file);
+  int dlen = sy_path_dir(file);
 
   // Build commonjs wrap
   duk_push_string(ctx,
@@ -167,9 +167,9 @@ static duk_ret_t load_dll(duk_context *ctx, void *udata) {
   if (!handle)
     duk_type_error(ctx, "could not load native");
 
-  int i, xi;
-  int bret = cs_path_base(file, &i);
-  int eret = cs_path_ext(file + i, &xi);
+  size_t i, xi;
+  int bret = sy_path_base(file, &i);
+  int eret = sy_path_ext(file + i, &xi);
 
   if (strncmp(file + i, "lib", 3) == 0) {
     bret -= 3;
@@ -225,13 +225,13 @@ duk_ret_t cjs_load_file(duk_context *ctx) {
   }
 
   int len = duk_get_length(ctx, -1);
-  int iexts;
+  size_t iexts;
   duk_ret_t ret;
   for (int i = 0; i < len; i++) {
     duk_get_prop_index(ctx, -1, i);
     const char *n = duk_require_string(ctx, -1);
 
-    if (!cs_path_ext(n, &iexts)) {
+    if (!sy_path_ext(n, &iexts)) {
       duk_type_error(ctx, "file '%s' has no extension", n);
     }
 

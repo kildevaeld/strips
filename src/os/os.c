@@ -1,5 +1,4 @@
 #include "../src/private.h"
-#include <csystem/string.h>
 #include <errno.h>
 #include <strips/modules.h>
 #include <strips/os/os.h>

@@ -3,11 +3,11 @@
 #include "commonjs_module.h"
 #include "console.h"
 #include "private.h"
-#include <csystem/file.h>
-#include <csystem/path.h>
 #include <strips/modules.h>
 #include <strips/strips.h>
 #include <strips/utils.h>
+#include <syrup/path.h>
+#include "file-utils.h"
 
 //#include "path/path.h"
 //#include "prompt/prompt.h"
@@ -89,8 +89,8 @@ duk_ret_t strips_eval_path(duk_context *ctx, const char *path, char **err) {
   int len = 0;
   int c = 0;
 
-  if (!cs_path_is_abs(path)) {
-    path = cs_path_abs(path, NULL, 0);
+  if (!sy_path_is_abs(path)) {
+    path = sy_path_abs(path, NULL, 0);
     c = 1;
   }
 

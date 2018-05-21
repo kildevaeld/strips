@@ -1,4 +1,4 @@
-#include <csystem/path.h>
+#include <syrup/path.h>
 #include <strips/path/path.h>
 
 static duk_ret_t duk_path_join(duk_context *ctx) {
