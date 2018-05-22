@@ -23,8 +23,6 @@ public:
 
       if (m_size > 0) {
         m_current = std::move(m_obj->index(0));
-        // m_current.first = m_keys[0];
-        // m_current.second = m_obj->get(m_keys[0]);
       }
     }
     self_type operator++() {
@@ -36,9 +34,7 @@ public:
         m_idx = -1;
         return *this;
       }
-      /*auto &key = m_keys[m_idx];
-      m_current.first = std::string(key);
-      m_current.second = m_obj->get(key);*/
+
       m_current = m_obj->index(m_size);
       return i;
     }
@@ -66,6 +62,7 @@ public:
     size_t m_size;
     Reference m_current;
   };
+
   Array() : Reference() {}
   Array(duk_context *ctx) : Reference(ctx) {}
   Array(duk_context *ctx, duk_idx_t idx) : Reference(ctx, idx) {}
@@ -85,7 +82,6 @@ public:
     duk_pop(ctx());
   }
 
-  
   template <class T = Reference> T index(size_t idx) {
     if (idx > size()) {
       throw std::runtime_error("overflow");
