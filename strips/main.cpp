@@ -1,6 +1,3 @@
-#include <csystem/csystem++.hpp>
-#include <csystem/file.h>
-#include <csystem/path.h>
 #include <iostream>
 #include <strips++/value.hpp>
 #include <strips++/vm.hpp>
@@ -61,7 +58,7 @@ int main(int argc, char *argv[]) {
   strips_exec_init(vm.ctx());
   strips_os_init(vm.ctx(), argc, argv, NULL);
 
-  args[0] = csystem::path::join(csystem::standardpaths::cwd(), args[0]);
+  /*args[0] = csystem::path::join(csystem::standardpaths::cwd(), args[0]);
 
   auto process = vm.object({{"argv", args},
                             {"platform", cs_platform_name()},
@@ -83,7 +80,7 @@ int main(int argc, char *argv[]) {
   } else {
     std::cerr << "File not found " << cs_path_ext(argv[1], &idx) << std::endl;
     return 3;
-  }
+  }*/
 
   try {
     auto result = vm.eval_path(argv[1]);

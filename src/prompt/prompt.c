@@ -1,7 +1,6 @@
-#include <csystem/terminal/form.h>
 #include <strips/modules.h>
 #include <strips/prompt/prompt.h>
-#include <syrup/term.h>
+#include <syrup/form.h>
 
 static duk_ret_t de_prompt_list(duk_context *ctx) {
   const char *msg = duk_require_string(ctx, 0);
@@ -20,7 +19,8 @@ static duk_ret_t de_prompt_list(duk_context *ctx) {
   }
   duk_pop(ctx);
 
-  int i = cs_term_form_list(msg, (const char **)buf, len);
+  sy_term_style_t style;
+  int i = sy_term_form_list(&style, msg, (const char **)buf, len);
 
   if (i == -1) {
     duk_push_undefined(ctx);
@@ -36,7 +36,8 @@ static duk_ret_t de_prompt_confirm(duk_context *ctx) {
 
   bool clear = duk_get_boolean_default(ctx, 1, false);
 
-  bool ret = cs_term_form_confirm(msg, clear);
+  sy_term_style_t style;
+  bool ret = sy_term_form_confirm(&style, msg, clear);
   duk_push_boolean(ctx, ret);
 
   return 1;
@@ -45,7 +46,8 @@ static duk_ret_t de_prompt_confirm(duk_context *ctx) {
 duk_ret_t de_prompt_input(duk_context *ctx) {
   const char *msg = duk_require_string(ctx, 0);
 
-  char *ret = cs_term_form_input(msg);
+  sy_term_style_t style;
+  char *ret = sy_term_form_prompt(&style,msg);
   duk_push_string(ctx, ret);
   free(ret);
 
@@ -55,7 +57,8 @@ duk_ret_t de_prompt_input(duk_context *ctx) {
 duk_ret_t de_prompt_password(duk_context *ctx) {
   const char *msg = duk_require_string(ctx, 0);
 
-  char *ret = cs_term_form_password(msg, NULL);
+  sy_term_style_t style;
+  char *ret = sy_term_form_password(&style, msg, NULL);
   duk_push_string(ctx, ret);
   free(ret);
 

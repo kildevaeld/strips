@@ -1,9 +1,6 @@
 [submodule "vendor/unity/Unity"]
 	path = vendor/unity/Unity
 	url = git@github.com:ThrowTheSwitch/Unity.git
-[submodule "vendor/csystem"]
-	path = vendor/csystem
-	url = git@github.com:kildevaeld/csystem.git
 [submodule "vendor/syrup-term"]
 	path = vendor/syrup-term
 	url = git@github.com:kildevaeld/syrup-term

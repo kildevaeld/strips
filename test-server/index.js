@@ -14,12 +14,16 @@ router.post('/post', async (ctx) => {
     const r = ctx.req;
     console.log(r.method, r.url, r.headers);
     var body = "";
-    r.on('readable', function () {
-        body += r.read();
+    let p = new Promise((res, rej) => {
+        r.on('data', function (data) {
+            body += data.toString();
+        });
+        r.on('end', function () {
+
+            res(body)
+        });
     });
-    r.on('end', function () {
-        console.log(body);
-    });
+    ctx.body = await p;
 })
 
 

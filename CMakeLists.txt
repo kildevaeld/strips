@@ -7,10 +7,13 @@ option(STRIPS_BUILD_CLI "build cli" off)
 option(STRIPS_BUILD_CXX "build c++" off)
 option(STRIPS_BUILD_CURL "build curl" off)
 
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+endif()
+
 include_directories(
     include 
     vendor/duktape-2.2.1/src
-    vendor/csystem/include
     vendor/syrup-path/include
     vendor/syrup-term/include
     vendor/syrup-term/vendor/syrup-buffer/include
@@ -28,7 +31,6 @@ if (STRIPS_BUILD_CXX)
 endif(STRIPS_BUILD_CXX)
 
 
-add_subdirectory(vendor/csystem)
 add_subdirectory(vendor/syrup-path)
 add_subdirectory(vendor/syrup-term)
 add_subdirectory(src)
@@ -41,8 +43,8 @@ endif(STRIPS_BUILD_CURL)
 
 
 if(STRIPS_BUILD_CXX)
-    #set(CMAKE_CXX_STANDARD 14)
-    #add_subdirectory(cxx)
+    set(CMAKE_CXX_STANDARD 14)
+    add_subdirectory(cxx)
 endif(STRIPS_BUILD_CXX)
 
 if (STRIPS_BUILD_CLI)

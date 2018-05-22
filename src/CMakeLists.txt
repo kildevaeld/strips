@@ -29,3 +29,9 @@ set(SOURCES
 
 add_library(strips ${SOURCES})
 target_link_libraries(strips syrup-path syrup-term)
+
+if(APPLE)
+    target_compile_definitions(strips PRIVATE CS_DLL_EXTENSION=".dylib")
+elseif(LINUX)
+    target_compile_definitions(strips PRIVATE CS_DLL_EXTENSION=".so")
+endif(APPLE)

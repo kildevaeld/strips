@@ -1,16 +1,15 @@
 #include "commonjs_file.h"
-#include <csystem/features.h>
 #include "file-utils.h"
 #include <dlfcn.h>
 #include <strips/definitions.h>
 #include <strips/utils.h>
 #include <syrup/path.h>
 
-#ifdef CS_PLATFORM_DARWIN
+/*#ifdef CS_PLATFORM_DARWIN
 #define CS_LIBRARY_EXT ".dylib"
 #elif CS_PLATFORM_POSIX
 #define CS_LIBRARY_EXT ".so"
-#endif
+#endif*/
 
 static bool cs_is_dll(const char *filename) {
   size_t iexts;

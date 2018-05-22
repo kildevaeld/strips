@@ -4,11 +4,13 @@
 #include <stdio.h>
 #include <strips/curl/curl.h>
 #include <strips/exec/exec.h>
-//#include <strips/filesystem/filesystem.h>
 #include <strips/io/io.h>
+#include <strips/os/os.h>
+#include <strips/path/path.h>
+#include <strips/prompt/prompt.h>
 
 // Run a single file, one time
-static int run_single(const char *path) {
+static int run_single(const char *path,int argc, const char **argv) {
 
   // dukext_config_t config;
   // dukext_config_init(&config);
@@ -25,10 +27,12 @@ static int run_single(const char *path) {
 
   strips_initialize(ctx);
 
+  strips_path_init(ctx);
+  strips_prompt_init(ctx);
   strips_io_init(ctx);
   strips_curl_init(ctx);
-  // strips_filesystem_init(ctx);
   strips_exec_init(ctx);
+  strips_os_init(ctx, argc, argv, NULL);
 
   char *err = NULL;
   duk_ret_t ret = strips_eval_path(ctx, path, &err);
@@ -52,5 +56,5 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  return run_single(argv[1]);
+  return run_single(argv[1], argc, argv);
 }

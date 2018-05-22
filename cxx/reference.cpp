@@ -144,7 +144,6 @@ bool Reference::valid() const { return ptr->valid(); }
 int Reference::ref() const { return ptr->ref; }
 
 void Reference::set_ref(int ref) {
-
   if (ptr->ref) {
     duk_unref(ptr->ctx, ptr->ref);
   }

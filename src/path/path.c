@@ -12,7 +12,7 @@ static duk_ret_t duk_path_join(duk_context *ctx) {
   paths[len] = NULL;
 
   // char buffer[l + 1];
-  char *buffer = cs_path_join_array(NULL, paths);
+  char *buffer = sy_path_join_array(NULL, paths);
   if (!buffer)
     return 0;
 
@@ -25,7 +25,7 @@ static duk_ret_t duk_path_base(duk_context *ctx) {
   const char *path = duk_require_string(ctx, 0);
 
   int len = 0, idx = 0;
-  if (!(len = cs_path_base(path, &idx))) {
+  if (!(len = sy_path_base(path, &idx))) {
     return 0;
   }
 
@@ -38,7 +38,7 @@ static duk_ret_t duk_path_dir(duk_context *ctx) {
   const char *path = duk_require_string(ctx, 0);
 
   int len = 0;
-  if (!(len = cs_path_dir(path))) {
+  if (!(len = sy_path_dir(path))) {
     return 0;
   }
 
@@ -52,7 +52,7 @@ static duk_ret_t duk_path_ext(duk_context *ctx) { return 0; }
 static duk_ret_t duk_path_resolve(duk_context *ctx) {
 
   const char *path = duk_require_string(ctx, 0);
-  char *buffer = cs_path_resolve(path, NULL);
+  char *buffer = sy_path_resolve(path, NULL);
   duk_push_string(ctx, buffer);
   free(buffer);
   return 1;

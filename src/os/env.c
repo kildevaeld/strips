@@ -4,6 +4,15 @@
 
 extern char **environ;
 
+static size_t indexof(const char *path, char c) {
+  size_t len = strlen(path);
+  for (size_t i = 0; i < len; i++) {
+    if (path[i] == c) return i;
+  }
+
+  return -1;
+}
+
 static duk_ret_t duk_os_env_get(duk_context *ctx) {
   char *e = getenv(duk_require_string(ctx, 1));
   if (!e) {
@@ -45,7 +54,7 @@ static duk_ret_t duk_os_env_ownkeys(duk_context *ctx) {
   int i = 0;
 
   while (environ[i]) {
-    int idx = cs_str_indexof(environ[i], '=');
+    int idx = indexof(environ[i], '=');
     duk_push_lstring(ctx, environ[i], idx);
     duk_put_prop_index(ctx, -2, i);
     // see https://github.com/svaarala/duktape/issues/1543

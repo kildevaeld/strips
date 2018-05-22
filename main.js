@@ -10,6 +10,8 @@ console.log(decoder.decode(resp.body));
 
 const file = new io.File(__filename);
 
-curl.post('http://localhost:3000/post', {
+var r = curl.post('http://localhost:3000/post', {
     data: file
 });
+
+console.log(decoder.decode(r.body));
