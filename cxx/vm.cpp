@@ -29,7 +29,7 @@ VM::VM(duk_context *ctx) : d(new internal::VMPrivate(ctx)) {}
 
 VM::~VM() {}
 
-Reference VM::eval_path(const std::string &path)  {
+Reference VM::eval_path(const std::string &path) {
   char *err = NULL;
   strips_eval_path(ctx(), path.c_str(), &err);
   if (err) {
@@ -39,18 +39,19 @@ Reference VM::eval_path(const std::string &path)  {
   duk_pop(ctx());
   return std::move(v);
 }
-Reference VM::eval_script(const std::string &script,
-                          const std::string &path)  {
+Reference VM::eval_script(const std::string &script, const std::string &path) {
   char *err = NULL;
   strips_eval_script(ctx(), script.c_str(), path.c_str(), &err);
   if (err) {
     throw std::runtime_error(err);
   }
-  Reference v(ctx());
+
+  Reference v(ctx(), -1);
+
   duk_pop(ctx());
   return std::move(v);
 }
-Reference VM::eval(const std::string &script)  {
+Reference VM::eval(const std::string &script) {
   duk_eval_string(ctx(), script.c_str());
   return std::move(pop<Reference>());
 }
@@ -118,7 +119,7 @@ const VM &VM::dump() const {
 
 duk_size_t VM::top() const { return duk_get_top(d->ctx); }
 
- VM &VM::pop(int count)  {
+VM &VM::pop(int count) {
   if (count == 0)
     return *this;
   duk_pop_n(ctx(), count);
@@ -126,7 +127,7 @@ duk_size_t VM::top() const { return duk_get_top(d->ctx); }
   return *this;
 }
 
- VM &VM::remove(duk_idx_t idx)  {
+VM &VM::remove(duk_idx_t idx) {
   duk_remove(ctx(), idx);
   return *this;
 }

@@ -85,6 +85,50 @@ void duk_unref(duk_context *ctx, int ref) {
   duk_pop(ctx);
 }
 
+void duk_stash_set_ptr(duk_context *ctx, const char *name, void *ptr) {
+  duk_push_global_stash(ctx);
+  if (!duk_get_prop_string(ctx, -1, "globals")) {
+    duk_pop(ctx);
+    duk_push_object(ctx);
+    duk_dup(ctx, -1);
+    duk_put_prop_string(ctx, -3, "globals");
+  }
+
+  duk_push_pointer(ctx, ptr);
+  duk_put_prop_string(ctx, -2, name);
+  duk_pop_2(ctx);
+}
+void *duk_stash_get_ptr(duk_context *ctx, const char *name) {
+
+  duk_push_global_stash(ctx);
+  if (!duk_get_prop_string(ctx, -1, "globals")) {
+    duk_pop_2(ctx);
+    return NULL;
+  }
+
+  duk_get_prop_string(ctx, -1, name);
+  if (duk_is_null_or_undefined(ctx, -1)) {
+    duk_pop_3(ctx);
+    return NULL;
+  }
+  void *c = duk_to_pointer(ctx, -1);
+
+  duk_pop_3(ctx);
+
+  return c;
+}
+
+void duk_stash_rm_ptr(duk_context *ctx, const char *name) {
+  duk_push_global_stash(ctx);
+  if (!duk_get_prop_string(ctx, -1, "globals")) {
+    duk_pop_2(ctx);
+    return;
+  }
+
+  duk_del_prop_string(ctx, -1, name);
+  duk_pop_2(ctx);
+}
+
 void duk_commonjs_wrapl(duk_context *ctx, const char *buffer, size_t len) {
   duk_push_string(ctx,
                   "(function(exports,require,module,__filename,__dirname){");

@@ -112,7 +112,7 @@ public:
 
   bool valid() const override { return type() == Type::Array; }
 
-  friend std::ostream &operator<<(std::ostream &s, const Array &);
+  // friend std::ostream &operator<<(std::ostream &s, const Array &);
 };
 
 } // namespace strips
