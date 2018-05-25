@@ -110,6 +110,9 @@ public:
   VM &pop(int count = 1);
   VM &remove(duk_idx_t idx);
 
+protected:
+  void set_ctx(duk_context *ctx, bool own = false);
+
 private:
   std::unique_ptr<internal::VMPrivate> d;
 };

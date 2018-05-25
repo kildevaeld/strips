@@ -79,6 +79,7 @@ duk_ret_t strips_set_module_resolver(duk_context *ctx, const char *protocol,
                                      strips_module_load_cb load) {
 
   if (!strips_get_entry(ctx, "resolvers")) {
+
     return false;
   }
 

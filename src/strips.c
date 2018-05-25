@@ -2,12 +2,12 @@
 #include "commonjs_file.h"
 #include "commonjs_module.h"
 #include "console.h"
+#include "file-utils.h"
 #include "private.h"
 #include <strips/modules.h>
 #include <strips/strips.h>
 #include <strips/utils.h>
 #include <syrup/path.h>
-#include "file-utils.h"
 
 //#include "path/path.h"
 //#include "prompt/prompt.h"
@@ -76,7 +76,7 @@ strips_ret_t strips_initialize(duk_context *ctx) {
   strips_set_module_resolver(ctx, "module", cjs_resolve_module,
                              cjs_load_module);
 
-  strips_set_module_resolver(ctx, "file", cjs_resolve_file, cjs_load_file);
+  // strips_set_module_resolver(ctx, "file", cjs_resolve_file, cjs_load_file);
 
   // strips_path_init(ctx);
   // strips_prompt_init(ctx);

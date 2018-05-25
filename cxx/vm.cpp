@@ -8,16 +8,20 @@ namespace strips {
 namespace internal {
 class VMPrivate {
 public:
-  VMPrivate(duk_context *c = NULL) : ctx(c) {
+  VMPrivate(duk_context *c = NULL, bool o = false) : ctx(c) {
     if (c == NULL) {
       ctx = duk_create_heap_default();
       owner = true;
+    } else {
+      owner = o;
     }
     strips_initialize(ctx);
   }
   ~VMPrivate() {
+
     if (owner)
       duk_destroy_heap(ctx);
+
     ctx = NULL;
   }
   duk_context *ctx = NULL;
@@ -42,6 +46,7 @@ Reference VM::eval_path(const std::string &path) {
 Reference VM::eval_script(const std::string &script, const std::string &path) {
   char *err = NULL;
   strips_eval_script(ctx(), script.c_str(), path.c_str(), &err);
+
   if (err) {
     throw std::runtime_error(err);
   }
@@ -130,6 +135,16 @@ VM &VM::pop(int count) {
 VM &VM::remove(duk_idx_t idx) {
   duk_remove(ctx(), idx);
   return *this;
+}
+
+void VM::set_ctx(duk_context *ctx, bool own) {
+  if (d->ctx && d->owner) {
+    duk_destroy_heap(d->ctx);
+    d->ctx = NULL;
+  }
+  d->ctx = ctx;
+  d->owner = own;
+  strips_initialize(d->ctx);
 }
 
 } // namespace strips
