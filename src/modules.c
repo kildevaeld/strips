@@ -79,7 +79,6 @@ duk_ret_t strips_set_module_resolver(duk_context *ctx, const char *protocol,
                                      strips_module_load_cb load) {
 
   if (!strips_get_entry(ctx, "resolvers")) {
-
     return false;
   }
 
@@ -102,4 +101,40 @@ duk_ret_t strips_set_module_resolver(duk_context *ctx, const char *protocol,
 end:
   duk_pop(ctx);
   return ret;
+}
+
+bool strips_set_module_parser(duk_context *ctx, const char *ext,
+                              duk_c_function fn) {
+  if (!strips_get_entry(ctx, "parsers")) {
+    return false;
+  }
+
+  bool ret = true;
+
+  if (duk_has_prop_string(ctx, -1, ext)) {
+    ret = false;
+    goto end;
+  }
+
+  duk_push_c_lightfunc(ctx, fn, 1, 1, 0);
+  duk_put_prop_string(ctx, -2, ext);
+
+end:
+  duk_pop(ctx);
+  return ret;
+}
+
+bool strips_get_module_parser(duk_context *ctx, const char *ext) {
+  if (!strips_get_entry(ctx, "parsers")) {
+    return false;
+  }
+
+  bool ret = true;
+
+  if (!duk_has_prop_string(ctx, -1, ext)) {
+    return false;
+  }
+  duk_put_prop_string(ctx, -1, ext);
+
+  return true;
 }

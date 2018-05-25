@@ -1,5 +1,5 @@
-#include <syrup/path.h>
 #include <strips/path/path.h>
+#include <syrup/path.h>
 
 static duk_ret_t duk_path_join(duk_context *ctx) {
   int len = duk_get_top(ctx);
@@ -24,7 +24,7 @@ static duk_ret_t duk_path_join(duk_context *ctx) {
 static duk_ret_t duk_path_base(duk_context *ctx) {
   const char *path = duk_require_string(ctx, 0);
 
-  int len = 0, idx = 0;
+  size_t len = 0, idx = 0;
   if (!(len = sy_path_base(path, &idx))) {
     return 0;
   }

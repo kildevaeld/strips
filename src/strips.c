@@ -56,6 +56,9 @@ static void strips_initialize_stash(duk_context *ctx) {
   duk_push_object(ctx);
   duk_put_prop_string(ctx, -2, "types");
 
+  duk_push_object(ctx);
+  duk_put_prop_string(ctx, -2, "parsers");
+
   duk_put_prop_string(ctx, -2, "strips");
 }
 

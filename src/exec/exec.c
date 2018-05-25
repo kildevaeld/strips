@@ -30,9 +30,9 @@ static duk_ret_t duk_exec_exec(duk_context *ctx) {
   char *args[top + 1];
 
   for (int i = 1; i < top; i++) {
-    args[i] = duk_get_string(ctx, i);
+    args[i] = (char *)duk_get_string(ctx, i);
   }
-  args[0] = cmdname;
+  args[0] = (char *)cmdname;
   args[top] = NULL;
 
   int filedes[2];

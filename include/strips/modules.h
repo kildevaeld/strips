@@ -1,5 +1,6 @@
 #pragma once
 #include <duktape.h>
+#include <stdbool.h>
 #include <strips/definitions.h>
 
 #ifdef __cplusplus
@@ -23,6 +24,11 @@ duk_bool_t duk_module_has(duk_context *ctx, const char *name);
 duk_ret_t strips_set_module_resolver(duk_context *ctx, const char *protocol,
                                      strips_module_resolve_cb resolve,
                                      strips_module_load_cb load);
+
+bool strips_set_module_parser(duk_context *ctx, const char *ext,
+                              duk_c_function fn);
+
+bool strips_get_module_parser(duk_context *ctx, const char *ext);
 
 #ifdef __cplusplus
 }
