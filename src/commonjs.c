@@ -392,19 +392,26 @@ static duk_ret_t strips__handle_require(duk_context *ctx) {
   if (builtin) {
 
     duk_module_push(ctx, id);
+
     if (duk_is_function(ctx, -1)) {
+      duk_get_prop_string(ctx, module_idx, "exports");
+      duk_get_prop_string(ctx, module_idx, "require");
       duk_dup(ctx, module_idx);
-      ret = duk_pcall(ctx, 1);
+      ret = duk_pcall(ctx, 3);
+
       if (ret != DUK_EXEC_SUCCESS) {
         if (ret != DUK_EXEC_SUCCESS) {
           strips__del_cached_module(ctx, id);
           duk_throw(ctx);
         }
       }
-      duk_put_prop_string(ctx, -2, "exports");
+
+      if (!duk_is_null_or_undefined(ctx, -1))
+        duk_put_prop_string(ctx, module_idx, "exports");
+      else
+        duk_pop(ctx);
 
     } else {
-      duk_dump_context_stdout(ctx);
     }
   } else {
     // We'are are on our own.
