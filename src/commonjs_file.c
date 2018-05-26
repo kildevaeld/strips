@@ -1,5 +1,6 @@
 #include "commonjs_file.h"
 #include "file-utils.h"
+#include "private.h"
 #include <dlfcn.h>
 #include <strips/definitions.h>
 #include <strips/utils.h>
@@ -227,6 +228,7 @@ duk_ret_t cjs_load_file(duk_context *ctx) {
   size_t iexts;
   duk_ret_t ret;
   for (int i = 0; i < len; i++) {
+
     duk_get_prop_index(ctx, -1, i);
     const char *n = duk_require_string(ctx, -1);
 
@@ -237,14 +239,48 @@ duk_ret_t cjs_load_file(duk_context *ctx) {
     // DLL
     if (strcmp(n + iexts, CS_DLL_EXTENSION) == 0) {
       ret = duk_safe_call(ctx, load_dll, NULL, 0, 0);
+      if (ret != DUK_EXEC_SUCCESS) {
+        duk_throw(ctx);
+      }
+      duk_push_object(ctx);
+      duk_dup(ctx, -2);
+      duk_put_prop_string(ctx, -2, "content");
+      duk_push_string(ctx, n);
+      duk_put_prop_string(ctx, -2, "file");
       // JS
-    } else if (strcmp(n + iexts, ".js") == 0) {
+    } /*else if (strcmp(n + iexts, ".js") == 0) {
       ret = duk_safe_call(ctx, load_javascript, NULL, 0, 0);
       // JSON (only if only)
     } else if (strcmp(n + iexts, ".json") == 0 && len == 1) {
       ret = duk_safe_call(ctx, load_json, NULL, 0, 0);
     } else {
       duk_type_error(ctx, "could not load %s\n", n);
+    }*/
+    else {
+      const char *file = duk_require_string(ctx, -1);
+      int size = cs_file_size(file);
+      if (size == 0) {
+        duk_push_string(ctx, "");
+        break;
+      }
+      char *buffer = duk_push_fixed_buffer(ctx, size);
+      if (!cs_read_file(file, buffer, size, &size)) {
+        duk_type_error(ctx, "could not read %s", file);
+      }
+
+      duk_push_object(ctx);
+      duk_dup(ctx, -2);
+      duk_put_prop_string(ctx, -2, "content");
+      duk_push_string(ctx, n);
+      duk_put_prop_string(ctx, -2, "file");
+      /*strips_get_entry(ctx, "find_parser");
+      duk_dup(ctx, -2);
+      duk_ret_t ret = duk_pcall(ctx, 1);
+      if (ret != DUK_EXEC_SUCCESS) {
+        duk_throw(ctx);
+      } else if (!duk_is_function(ctx, -1)) {
+        duk_type_error(ctx, "invalid file format");
+      }*/
     }
 
     if (ret != DUK_EXEC_SUCCESS) {

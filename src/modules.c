@@ -74,6 +74,21 @@ duk_bool_t duk_module_has(duk_context *ctx, const char *name) {
   return ret;
 }
 
+duk_bool_t duk_module_push(duk_context *ctx, const char *name) {
+
+  if (!strips_get_entry(ctx, "modules")) {
+    return false;
+  }
+
+  bool ret = duk_get_prop_string(ctx, -1, name);
+  if (!ret) {
+    duk_pop_2(ctx);
+    return false;
+  }
+  duk_remove(ctx, -2);
+  return ret;
+}
+
 duk_ret_t strips_set_module_resolver(duk_context *ctx, const char *protocol,
                                      strips_module_resolve_cb resolve,
                                      strips_module_load_cb load) {

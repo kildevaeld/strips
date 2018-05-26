@@ -24,6 +24,17 @@ static duk_ret_t get_module_resolver(duk_context *ctx) {
   return 1;
 }
 
+static duk_ret_t get_module_parser(duk_context *ctx) {
+  // duk_push_global_stash(ctx);
+  // duk_get_prop_string(ctx, -1, "resolvers");
+
+  strips_get_entry(ctx, "parsers");
+
+  duk_get_prop_string(ctx, -1, duk_require_string(ctx, 0));
+
+  return 1;
+}
+
 static void strips_initialize_stash(duk_context *ctx) {
   duk_push_object(ctx);
 
@@ -59,6 +70,9 @@ static void strips_initialize_stash(duk_context *ctx) {
   duk_push_object(ctx);
   duk_put_prop_string(ctx, -2, "parsers");
 
+  duk_push_c_lightfunc(ctx, get_module_parser, 1, 1, 0);
+  duk_put_prop_string(ctx, -2, "find_parser");
+
   duk_put_prop_string(ctx, -2, "strips");
 }
 
@@ -79,7 +93,7 @@ strips_ret_t strips_initialize(duk_context *ctx) {
   strips_set_module_resolver(ctx, "module", cjs_resolve_module,
                              cjs_load_module);
 
-  // strips_set_module_resolver(ctx, "file", cjs_resolve_file, cjs_load_file);
+  strips_set_module_resolver(ctx, "file", cjs_resolve_file, cjs_load_file);
 
   // strips_path_init(ctx);
   // strips_prompt_init(ctx);

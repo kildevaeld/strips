@@ -19,6 +19,8 @@ strips_ret_t duk_module_add_str(duk_context *ctx, const char *name,
 strips_ret_t duk_module_add_lstr(duk_context *ctx, const char *name,
                                  const char *script, duk_size_t size);
 
+duk_bool_t duk_module_push(duk_context *ctx, const char *name);
+
 duk_bool_t duk_module_has(duk_context *ctx, const char *name);
 
 duk_ret_t strips_set_module_resolver(duk_context *ctx, const char *protocol,

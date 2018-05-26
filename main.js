@@ -1,17 +1,20 @@
-const curl = require('curl'),
-    io = require('io');
+const inc = require('./include');
 
-const decoder = new TextDecoder('utf8');
+// const curl = require('curl'),
+//     io = require('io'),
+//     inc = require('./include');
 
-const resp = curl.get('http://localhost:3000');
+// const decoder = new TextDecoder('utf8');
 
-console.log(decoder.decode(resp.body));
+// const resp = curl.get('http://localhost:3000');
+
+// console.log(decoder.decode(resp.body));
 
 
-const file = new io.File(__filename);
+// const file = new io.File(__filename);
 
-var r = curl.post('http://localhost:3000/post', {
-    data: file
-});
+// var r = curl.post('http://localhost:3000/post', {
+//     data: file
+// });
 
-console.log(decoder.decode(r.body));
+// console.log(decoder.decode(r.body));
