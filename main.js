@@ -1,5 +1,5 @@
-const inc = require('./include');
-
+const inc = require('./include.js');
+console.log(inc.test);
 // const curl = require('curl'),
 //     io = require('io'),
 //     inc = require('./include');
