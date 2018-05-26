@@ -12,7 +12,6 @@ set(SOURCES
     console.c
     types.c
     file-utils.c
-
     path/path.c
     exec/exec.c
     prompt/prompt.c
@@ -23,7 +22,6 @@ set(SOURCES
     io/file.c
     io/reader.c
     io/writer.c
-
 )
 
 add_library(strips ${SOURCES})

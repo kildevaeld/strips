@@ -329,8 +329,6 @@ static duk_ret_t strips__resolve_module(duk_context *ctx, void *udata) {
 
 static duk_ret_t strips__handle_require(duk_context *ctx) {
 
-  // dukext_t *vm = duk_get_dukext(ctx);
-
   duk_push_current_function(ctx);
   (void)duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("moduleId"));
   const char *parent_id = duk_require_string(ctx, -1);

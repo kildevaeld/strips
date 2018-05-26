@@ -1,7 +1,7 @@
 const curl = require('curl'),
     io = require('io'),
     inc = require('./include');
-
+console.log(inc.test);
 const decoder = new TextDecoder('utf8');
 
 const resp = curl.get('http://localhost:3000');
