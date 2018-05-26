@@ -5,10 +5,55 @@
 #include <strips/utils.h>
 #include <syrup/path.h>
 
-static duk_ret_t strips__resolve_module(duk_context *ctx, void *udata);
-static duk_ret_t strips__load_module(duk_context *ctx, void *udata);
-static void strips__push_module_object(duk_context *ctx, const char *id,
-                                       duk_bool_t main);
+static void strips__push_require_function(duk_context *ctx, const char *id);
+
+static duk_ret_t duk__parse_javascript(duk_context *ctx) {
+  const char *src = duk_require_string(ctx, 1);
+
+  duk_push_string(ctx,
+                  "(function(exports,require,module,__filename,__dirname){");
+
+  duk_push_string(
+      ctx, (src[0] == '#' && src[1] == '!') ? "//" : ""); /* Shebang support. */
+  duk_dup(ctx, 1);                                        /* source */
+  duk_push_string(
+      ctx,
+      "\n})"); /* Newline allows module last line to contain a // comment. */
+  duk_concat(ctx, 4);
+
+  (void)duk_get_prop_string(ctx, 0, "filename");
+  duk_compile(ctx, DUK_COMPILE_EVAL);
+  duk_call(ctx, 0);
+
+  /* call the function wrapper */
+  (void)duk_get_prop_string(ctx, 0, "exports");  /* exports */
+  (void)duk_get_prop_string(ctx, 0, "require");  /* require */
+  duk_dup(ctx, -5);                              /* module */
+  (void)duk_get_prop_string(ctx, 0, "filename"); /* __filename */
+  const char *file = duk_get_string(ctx, -1);
+  int i = sy_path_dir(file);
+  duk_push_lstring(ctx, file, i);
+  // duk_push_undefined(ctx);                        /* __dirname */
+  duk_call(ctx, 5);
+
+  /* [ ... module source result(ignore) ] */
+
+  /* module.loaded = true */
+  duk_push_true(ctx);
+  duk_put_prop_string(ctx, 0, "loaded");
+
+  return 0;
+}
+
+static duk_ret_t duk__parse_json(duk_context *ctx) {
+
+  duk_json_decode(ctx, 1);
+  duk_put_prop_string(ctx, 0, "exports");
+
+  return 0;
+}
+
+//#region Cache
 
 static duk_bool_t strips__get_cached_module(duk_context *ctx, const char *id) {
   duk_push_global_stash(ctx);
@@ -50,102 +95,7 @@ static void strips__del_cached_module(duk_context *ctx, const char *id) {
   duk_pop_2(ctx);
 }
 
-static duk_ret_t strips__handle_require(duk_context *ctx) {
-
-  // dukext_t *vm = duk_get_dukext(ctx);
-
-  duk_push_current_function(ctx);
-  (void)duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("moduleId"));
-  const char *parent_id = duk_require_string(ctx, -1);
-  (void)parent_id; /* not used directly; suppress warning */
-
-  /* [ id require parent_id ] */
-
-  const char *id = duk_require_string(ctx, 0);
-
-  // duk_dup(ctx, 0);  /* module ID */
-  // duk_dup(ctx, -2); /* parent ID */
-  // dukext_dump_context_stdout(ctx);
-
-  duk_ret_t ret = duk_safe_call(ctx, strips__resolve_module, NULL, 3, 1);
-
-  if (ret != DUK_EXEC_SUCCESS) {
-    duk_throw(ctx);
-  }
-
-  if (duk_is_undefined(ctx, -1)) {
-    duk_type_error(ctx, "could resolve file %s", id);
-  }
-
-  if (!duk_is_object_coercible(ctx, -1)) {
-    duk_type_error(ctx, "invalid return type");
-  }
-
-  duk_get_prop_string(ctx, -1, "id");
-  // duk_get_prop_index(ctx, -1, 0);
-  id = duk_require_string(ctx, -1);
-  duk_pop(ctx);
-
-  if (strips__get_cached_module(ctx, id)) {
-    goto have_module; /* use the cached module */
-  }
-
-  strips__push_module_object(ctx, id, 0 /*main*/);
-  strips__put_cached_module(ctx); /* module remains on stack */
-
-  /*
-   *  From here on out, we have to be careful not to throw.  If it can't be
-   *  avoided, the error must be caught and the module removed from the
-   *  require cache before rethrowing.  This allows the application to
-   *  reattempt loading the module.
-   */
-
-  duk_idx_t module_idx = duk_normalize_index(ctx, -1);
-  duk_idx_t info_idx = duk_normalize_index(ctx, -2);
-
-  duk_get_prop_string(ctx, info_idx, "resolver");
-  duk_get_prop_string(ctx, -1, "load");
-
-  duk_dup(ctx, info_idx);
-  duk_dup(ctx, module_idx);
-
-  ret = duk_pcall(ctx, 2);
-
-  if (ret != DUK_EXEC_SUCCESS) {
-    strips__del_cached_module(ctx, id);
-    duk_throw(ctx);
-  }
-  duk_pop_2(ctx);
-
-  /* fall through */
-
-have_module:
-  /* [ ... module ] */
-
-  (void)duk_get_prop_string(ctx, -1, "exports");
-  return 1;
-}
-
-static void strips__push_require_function(duk_context *ctx, const char *id) {
-  duk_push_c_function(ctx, strips__handle_require, 1);
-  duk_push_string(ctx, "name");
-  duk_push_string(ctx, "require");
-  duk_def_prop(ctx, -3, DUK_DEFPROP_HAVE_VALUE);
-  duk_push_string(ctx, id);
-  duk_put_prop_string(ctx, -2, DUK_HIDDEN_SYMBOL("moduleId"));
-
-  /* require.cache */
-  duk_push_global_stash(ctx);
-  (void)duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("requireCache"));
-  duk_put_prop_string(ctx, -3, "cache");
-  duk_pop(ctx);
-
-  /* require.main */
-  duk_push_global_stash(ctx);
-  (void)duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("mainModule"));
-  duk_put_prop_string(ctx, -3, "main");
-  duk_pop(ctx);
-}
+//#endregion
 
 static void strips__push_module_object(duk_context *ctx, const char *id,
                                        duk_bool_t main) {
@@ -286,13 +236,11 @@ static duk_ret_t strips__resolve_module(duk_context *ctx, void *udata) {
   const char *module_id = duk_require_string(ctx, -3);
   const char *parent_id = duk_require_string(ctx, -1);
 
-  bool builtin = false;
-
-  if (duk_module_has(ctx, module_id)) {
-    builtin = true;
-  }
-
   duk_idx_t obj_idx = duk_push_object(ctx);
+
+  duk_dup(ctx, -4);
+  duk_put_prop_string(ctx, obj_idx, "id");
+
   duk_push_array(ctx);
   duk_put_prop_string(ctx, obj_idx, "files");
   duk_dup(ctx, -4);
@@ -329,12 +277,7 @@ static duk_ret_t strips__resolve_module(duk_context *ctx, void *udata) {
       duk_put_prop_string(ctx, obj_idx, "id");
     }
   } else {
-
-    duk_push_string(ctx, "module://");
-
-    duk_dup(ctx, -2);
-    duk_concat(ctx, 2);
-    duk_put_prop_string(ctx, obj_idx, "id");
+    duk_type_error(ctx, "coudl resolve module: %s", module_id);
   }
 
   duk_pop(ctx);
@@ -384,8 +327,185 @@ static duk_ret_t strips__resolve_module(duk_context *ctx, void *udata) {
   return 1;
 }
 
-void strips_commonjs_init(duk_context *ctx) {
+static duk_ret_t strips__handle_require(duk_context *ctx) {
 
+  // dukext_t *vm = duk_get_dukext(ctx);
+
+  duk_push_current_function(ctx);
+  (void)duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("moduleId"));
+  const char *parent_id = duk_require_string(ctx, -1);
+  (void)parent_id; /* not used directly; suppress warning */
+
+  /* [ id require parent_id ] */
+
+  const char *id = duk_require_string(ctx, 0);
+
+  // duk_dup(ctx, 0);  /* module ID */
+  // duk_dup(ctx, -2); /* parent ID */
+  // dukext_dump_context_stdout(ctx);
+  duk_ret_t ret;
+  bool builtin = false;
+  if (duk_module_has(ctx, id)) {
+    builtin = true;
+    duk_push_bare_object(ctx);
+    duk_dup(ctx, 0);
+
+    duk_put_prop_string(ctx, -2, "id");
+
+  } else {
+
+    ret = duk_safe_call(ctx, strips__resolve_module, NULL, 3, 1);
+
+    if (ret != DUK_EXEC_SUCCESS) {
+      duk_throw(ctx);
+    }
+
+    if (duk_is_undefined(ctx, -1)) {
+      duk_type_error(ctx, "could resolve file %s", id);
+    }
+  }
+
+  if (!duk_is_object_coercible(ctx, -1)) {
+    duk_type_error(ctx, "invalid return type");
+  }
+
+  duk_get_prop_string(ctx, -1, "id");
+  // duk_get_prop_index(ctx, -1, 0);
+  id = duk_require_string(ctx, -1);
+  duk_pop(ctx);
+
+  if (strips__get_cached_module(ctx, id)) {
+    goto have_module; /* use the cached module */
+  }
+
+  strips__push_module_object(ctx, id, 0 /*main*/);
+  strips__put_cached_module(ctx); /* module remains on stack */
+
+  /*
+   *  From here on out, we have to be careful not to throw.  If it can't be
+   *  avoided, the error must be caught and the module removed from the
+   *  require cache before rethrowing.  This allows the application to
+   *  reattempt loading the module.
+   */
+
+  duk_idx_t module_idx = duk_normalize_index(ctx, -1);
+  duk_idx_t info_idx = duk_normalize_index(ctx, -2);
+
+  if (builtin) {
+
+    duk_module_push(ctx, id);
+    if (duk_is_function(ctx, -1)) {
+      duk_dup(ctx, module_idx);
+      ret = duk_pcall(ctx, 1);
+      if (ret != DUK_EXEC_SUCCESS) {
+        if (ret != DUK_EXEC_SUCCESS) {
+          strips__del_cached_module(ctx, id);
+          duk_throw(ctx);
+        }
+      }
+      duk_put_prop_string(ctx, -2, "exports");
+
+    } else {
+      duk_dump_context_stdout(ctx);
+    }
+  } else {
+    // We'are are on our own.
+    // Try to se if we can find a loader
+    duk_get_prop_string(ctx, info_idx, "resolver");
+    duk_get_prop_string(ctx, -1, "load");
+
+    duk_dup(ctx, info_idx);
+    duk_dup(ctx, module_idx);
+
+    ret = duk_pcall(ctx, 2);
+
+    if (ret != DUK_EXEC_SUCCESS) {
+      strips__del_cached_module(ctx, id);
+      duk_throw(ctx);
+    }
+
+    duk_pop(ctx);
+
+    duk_get_prop_string(ctx, 0, "files");
+
+    duk_size_t asize = duk_get_length(ctx, -1);
+    for (duk_size_t i = 0; i < asize; i++) {
+      duk_get_prop_index(ctx, -1, i);
+      duk_idx_t idx = duk_normalize_index(ctx, -1);
+      duk_get_prop_string(ctx, -1, "content");
+      // We want a string but naiively accepting a buffer
+      if (duk_is_buffer(ctx, -1)) {
+        duk_buffer_to_string(ctx, -1);
+      }
+
+      if (!duk_is_string(ctx, -1))
+        duk_type_error(ctx, "content should be string");
+      duk_idx_t didx = duk_normalize_index(ctx, -1);
+      strips_get_entry(ctx, "find_parser");
+      duk_get_prop_string(ctx, idx, "file");
+      const char *fi = duk_get_string(ctx, -1);
+      duk_pop(ctx);
+      size_t eidx;
+      size_t len = sy_path_ext(fi, &eidx);
+      if (len == 0) {
+        duk_type_error(ctx, "no ext");
+      }
+
+      duk_push_lstring(ctx, fi + eidx, len);
+
+      duk_ret_t ret = duk_pcall(ctx, 1);
+      if (ret != DUK_EXEC_SUCCESS) {
+        duk_throw(ctx);
+      } else if (duk_is_undefined(ctx, -1)) {
+        duk_type_error(ctx, "parser not found: %s", fi);
+      }
+
+      duk_dup(ctx, module_idx);
+      duk_dup(ctx, -3);
+
+      ret = duk_pcall(ctx, 2);
+      if (ret != DUK_EXEC_SUCCESS) {
+        duk_throw(ctx);
+      }
+      duk_pop(ctx);
+
+      duk_pop_2(ctx);
+    }
+
+    duk_pop_2(ctx);
+  }
+
+  /* fall through */
+
+have_module:
+  /* [ ... module ] */
+
+  (void)duk_get_prop_string(ctx, -1, "exports");
+  return 1;
+}
+
+static void strips__push_require_function(duk_context *ctx, const char *id) {
+  duk_push_c_function(ctx, strips__handle_require, 1);
+  duk_push_string(ctx, "name");
+  duk_push_string(ctx, "require");
+  duk_def_prop(ctx, -3, DUK_DEFPROP_HAVE_VALUE);
+  duk_push_string(ctx, id);
+  duk_put_prop_string(ctx, -2, DUK_HIDDEN_SYMBOL("moduleId"));
+
+  /* require.cache */
+  duk_push_global_stash(ctx);
+  (void)duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("requireCache"));
+  duk_put_prop_string(ctx, -3, "cache");
+  duk_pop(ctx);
+
+  /* require.main */
+  duk_push_global_stash(ctx);
+  (void)duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("mainModule"));
+  duk_put_prop_string(ctx, -3, "main");
+  duk_pop(ctx);
+}
+
+void strips_commonjs_init(duk_context *ctx) {
   duk_push_global_stash(ctx);
 
   duk_push_bare_object(ctx);
@@ -398,7 +518,6 @@ void strips_commonjs_init(duk_context *ctx) {
   duk_put_prop_string(ctx, -2, DUK_HIDDEN_SYMBOL("mainModule"));
   duk_pop(ctx);
 
-  /* register `require` as a global function. */
   duk_push_global_object(ctx);
   duk_push_string(ctx, "require");
   strips__push_require_function(ctx, "");
@@ -406,6 +525,9 @@ void strips_commonjs_init(duk_context *ctx) {
                DUK_DEFPROP_HAVE_VALUE | DUK_DEFPROP_SET_WRITABLE |
                    DUK_DEFPROP_SET_CONFIGURABLE);
   duk_pop(ctx);
+
+  strips_set_module_parser(ctx, ".js", duk__parse_javascript);
+  strips_set_module_parser(ctx, ".json", duk__parse_json);
 }
 
 duk_ret_t strips_commonjs_eval_main(duk_context *ctx, const char *path) {

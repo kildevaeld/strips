@@ -6,8 +6,7 @@ set(SOURCES
     strips.c
     private.c
     utils.c
-    commonjs2.c
-    #commonjs_module.c
+    commonjs.c
     commonjs_file.c
     modules.c
     console.c
