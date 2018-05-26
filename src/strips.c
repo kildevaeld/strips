@@ -1,6 +1,5 @@
 #include "commonjs.h"
 #include "commonjs_file.h"
-#include "commonjs_module.h"
 #include "console.h"
 #include "file-utils.h"
 #include "private.h"
@@ -9,28 +8,22 @@
 #include <strips/utils.h>
 #include <syrup/path.h>
 
-//#include "path/path.h"
-//#include "prompt/prompt.h"
 #include "script-data.h"
 
 static duk_ret_t get_module_resolver(duk_context *ctx) {
-  // duk_push_global_stash(ctx);
-  // duk_get_prop_string(ctx, -1, "resolvers");
 
   strips_get_entry(ctx, "resolvers");
-
   duk_get_prop_string(ctx, -1, duk_require_string(ctx, 0));
+  duk_remove(ctx, -2);
 
   return 1;
 }
 
 static duk_ret_t get_module_parser(duk_context *ctx) {
-  // duk_push_global_stash(ctx);
-  // duk_get_prop_string(ctx, -1, "resolvers");
 
   strips_get_entry(ctx, "parsers");
-
   duk_get_prop_string(ctx, -1, duk_require_string(ctx, 0));
+  duk_remove(ctx, -2);
 
   return 1;
 }
@@ -90,13 +83,7 @@ strips_ret_t strips_initialize(duk_context *ctx) {
   duk_console_init(ctx, DUK_CONSOLE_FLUSH);
   duk_module_add_lstr(ctx, "util", (const char *)util_js, util_js_len);
 
-  strips_set_module_resolver(ctx, "module", cjs_resolve_module,
-                             cjs_load_module);
-
   strips_set_module_resolver(ctx, "file", cjs_resolve_file, cjs_load_file);
-
-  // strips_path_init(ctx);
-  // strips_prompt_init(ctx);
 
   return STRIPS_OK;
 }
@@ -118,8 +105,6 @@ duk_ret_t strips_eval_path(duk_context *ctx, const char *path, char **err) {
     if (c)
       free((char *)path);
     if (err) {
-      // dukext_err_t *e = (dukext_err_t *)malloc(sizeof(dukext_err_t));
-      // e->message = strdup("file not found");
       *err = "file not found";
     }
     return DUK_EXEC_ERROR;
@@ -138,8 +123,7 @@ duk_ret_t strips_eval_path(duk_context *ctx, const char *path, char **err) {
     } else {
       duk_pop(ctx);
     }
-    // dukext_err_t *e = (dukext_err_t *)malloc(sizeof(dukext_err_t));
-    // e->message = strdup(duk_require_string(ctx, -1));
+
     *err = duk_require_string(ctx, -1);
   }
 

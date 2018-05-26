@@ -6,12 +6,6 @@
 #include <strips/utils.h>
 #include <syrup/path.h>
 
-/*#ifdef CS_PLATFORM_DARWIN
-#define CS_LIBRARY_EXT ".dylib"
-#elif CS_PLATFORM_POSIX
-#define CS_LIBRARY_EXT ".so"
-#endif*/
-
 static bool cs_is_dll(const char *filename) {
   size_t iexts;
   sy_path_ext(filename, &iexts);
@@ -82,80 +76,80 @@ duk_ret_t cjs_resolve_file(duk_context *ctx) {
   return 0;
 }
 
-static duk_ret_t load_javascript(duk_context *ctx, void *udata) {
+// static duk_ret_t load_javascript(duk_context *ctx, void *udata) {
 
-  duk_idx_t midx = duk_normalize_index(ctx, -3);
-  duk_idx_t iidx = duk_normalize_index(ctx, -4);
-  duk_idx_t fidx = duk_normalize_index(ctx, -1);
-  const char *file = duk_require_string(ctx, -1);
+//   duk_idx_t midx = duk_normalize_index(ctx, -3);
+//   duk_idx_t iidx = duk_normalize_index(ctx, -4);
+//   duk_idx_t fidx = duk_normalize_index(ctx, -1);
+//   const char *file = duk_require_string(ctx, -1);
 
-  int len;
-  char *buffer = cs_read_file(file, NULL, 0, &len);
-  if (len == 0)
-    duk_type_error(ctx, "could not read %s", file);
+//   int len;
+//   char *buffer = cs_read_file(file, NULL, 0, &len);
+//   if (len == 0)
+//     duk_type_error(ctx, "could not read %s", file);
 
-  int dlen = sy_path_dir(file);
+//   int dlen = sy_path_dir(file);
 
-  // Build commonjs wrap
-  duk_push_string(ctx,
-                  "(function(exports,require,module,__filename,__dirname){");
+//   // Build commonjs wrap
+//   duk_push_string(ctx,
+//                   "(function(exports,require,module,__filename,__dirname){");
 
-  duk_push_string(ctx, (buffer[0] == '#' && buffer[1] == '!')
-                           ? "//"
-                           : "");     /* Shebang support. */
-  duk_push_lstring(ctx, buffer, len); /* source */
-  duk_push_string(
-      ctx,
-      "\n})"); /* Newline allows module last line to contain a // comment. */
-  duk_concat(ctx, 4);
-  duk_dup(ctx, -2); // filename
-  duk_compile(ctx, DUK_COMPILE_EVAL);
-  duk_call(ctx, 0);
+//   duk_push_string(ctx, (buffer[0] == '#' && buffer[1] == '!')
+//                            ? "//"
+//                            : "");     /* Shebang support. */
+//   duk_push_lstring(ctx, buffer, len); /* source */
+//   duk_push_string(
+//       ctx,
+//       "\n})"); /* Newline allows module last line to contain a // comment. */
+//   duk_concat(ctx, 4);
+//   duk_dup(ctx, -2); // filename
+//   duk_compile(ctx, DUK_COMPILE_EVAL);
+//   duk_call(ctx, 0);
 
-  /* [ ... module source func ] */
+//   /* [ ... module source func ] */
 
-  /* Set name for the wrapper function. */
-  duk_push_string(ctx, "name");
-  duk_push_string(ctx, "main");
-  duk_def_prop(ctx, -3, DUK_DEFPROP_HAVE_VALUE | DUK_DEFPROP_FORCE);
+//   /* Set name for the wrapper function. */
+//   duk_push_string(ctx, "name");
+//   duk_push_string(ctx, "main");
+//   duk_def_prop(ctx, -3, DUK_DEFPROP_HAVE_VALUE | DUK_DEFPROP_FORCE);
 
-  (void)duk_get_prop_string(ctx, midx, "exports");  /* exports */
-  (void)duk_get_prop_string(ctx, midx, "require");  /* require */
-  duk_dup(ctx, midx);                               /* module */
-  (void)duk_get_prop_string(ctx, fidx, "filename"); /* __filename */
-  duk_push_lstring(ctx, file, dlen);                /* __dirname */
-  duk_call(ctx, 5);
-  duk_pop(ctx); // ignore return value
-  duk_push_true(ctx);
-  duk_put_prop_string(ctx, midx, "loaded");
+//   (void)duk_get_prop_string(ctx, midx, "exports");  /* exports */
+//   (void)duk_get_prop_string(ctx, midx, "require");  /* require */
+//   duk_dup(ctx, midx);                               /* module */
+//   (void)duk_get_prop_string(ctx, fidx, "filename"); /* __filename */
+//   duk_push_lstring(ctx, file, dlen);                /* __dirname */
+//   duk_call(ctx, 5);
+//   duk_pop(ctx); // ignore return value
+//   duk_push_true(ctx);
+//   duk_put_prop_string(ctx, midx, "loaded");
 
-  return 0;
-}
+//   return 0;
+// }
 
-static duk_ret_t load_json(duk_context *ctx, void *udata) {
-  duk_idx_t midx = duk_normalize_index(ctx, -3);
-  duk_idx_t iidx = duk_normalize_index(ctx, -4);
+// static duk_ret_t load_json(duk_context *ctx, void *udata) {
+//   duk_idx_t midx = duk_normalize_index(ctx, -3);
+//   duk_idx_t iidx = duk_normalize_index(ctx, -4);
 
-  const char *file = duk_require_string(ctx, -1);
+//   const char *file = duk_require_string(ctx, -1);
 
-  int size = cs_file_size(file);
+//   int size = cs_file_size(file);
 
-  if (size == 0) {
-    return 0;
-  }
+//   if (size == 0) {
+//     return 0;
+//   }
 
-  char *buffer = duk_push_fixed_buffer(ctx, size);
-  if (!cs_read_file(file, buffer, size, &size)) {
-    duk_type_error(ctx, "could not read %s", file);
-  }
+//   char *buffer = duk_push_fixed_buffer(ctx, size);
+//   if (!cs_read_file(file, buffer, size, &size)) {
+//     duk_type_error(ctx, "could not read %s", file);
+//   }
 
-  duk_buffer_to_string(ctx, -1);
-  duk_json_decode(ctx, -1);
+//   duk_buffer_to_string(ctx, -1);
+//   duk_json_decode(ctx, -1);
 
-  duk_put_prop_string(ctx, midx, "exports");
+//   duk_put_prop_string(ctx, midx, "exports");
 
-  return 0;
-}
+//   return 0;
+// }
 
 static duk_ret_t load_dll(duk_context *ctx, void *udata) {
   duk_idx_t midx = duk_normalize_index(ctx, -3);
@@ -251,16 +245,8 @@ duk_ret_t cjs_load_file(duk_context *ctx) {
 
       duk_put_prop_index(ctx, aidx, i);
       duk_pop(ctx);
-      // JS
-    } /*else if (strcmp(n + iexts, ".js") == 0) {
-      ret = duk_safe_call(ctx, load_javascript, NULL, 0, 0);
-      // JSON (only if only)
-    } else if (strcmp(n + iexts, ".json") == 0 && len == 1) {
-      ret = duk_safe_call(ctx, load_json, NULL, 0, 0);
+
     } else {
-      duk_type_error(ctx, "could not load %s\n", n);
-    }*/
-    else {
 
       const char *file = duk_require_string(ctx, -1);
       int size = cs_file_size(file);
@@ -281,15 +267,6 @@ duk_ret_t cjs_load_file(duk_context *ctx) {
 
       duk_put_prop_index(ctx, aidx, i);
       duk_pop(ctx);
-
-      /*strips_get_entry(ctx, "find_parser");
-      duk_dup(ctx, -2);
-      duk_ret_t ret = duk_pcall(ctx, 1);
-      if (ret != DUK_EXEC_SUCCESS) {
-        duk_throw(ctx);
-      } else if (!duk_is_function(ctx, -1)) {
-        duk_type_error(ctx, "invalid file format");
-      }*/
     }
 
     if (ret != DUK_EXEC_SUCCESS) {

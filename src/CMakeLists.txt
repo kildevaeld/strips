@@ -7,7 +7,7 @@ set(SOURCES
     private.c
     utils.c
     commonjs2.c
-    commonjs_module.c
+    #commonjs_module.c
     commonjs_file.c
     modules.c
     console.c
