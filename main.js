@@ -1,7 +1,8 @@
+require('./test.yaml');
 const curl = require('curl'),
     io = require('io'),
     inc = require('./include');
-console.log(inc.test);
+console.log(require('util').format("Hello %s!", 'world'));
 const decoder = new TextDecoder('utf8');
 
 const resp = curl.get('http://localhost:3000');
