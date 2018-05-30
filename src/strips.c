@@ -83,7 +83,7 @@ strips_ret_t strips_initialize(duk_context *ctx) {
   duk_console_init(ctx, DUK_CONSOLE_FLUSH);
   duk_module_add_lstr(ctx, "util", (const char *)util_js, util_js_len);
 
-  strips_set_module_resolver(ctx, "file", cjs_resolve_file, cjs_load_file);
+  // strips_set_module_resolver(ctx, "file", cjs_resolve_file, cjs_load_file);
 
   return STRIPS_OK;
 }
