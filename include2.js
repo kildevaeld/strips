@@ -1,0 +1,1 @@
+exports.test2 = "World 2";

@@ -5,6 +5,53 @@
 #include <strips/utils.h>
 #include <syrup/path.h>
 
+// You must free the result if result is non-NULL.
+static char *str_replace(char *orig, char *rep, char *with) {
+  char *result;  // the return string
+  char *ins;     // the next insert point
+  char *tmp;     // varies
+  int len_rep;   // length of rep (the string to remove)
+  int len_with;  // length of with (the string to replace rep with)
+  int len_front; // distance between rep and end of last rep
+  int count;     // number of replacements
+
+  // sanity checks and initialization
+  if (!orig || !rep)
+    return NULL;
+  len_rep = strlen(rep);
+  if (len_rep == 0)
+    return NULL; // empty rep causes infinite loop during count
+  if (!with)
+    with = "";
+  len_with = strlen(with);
+
+  // count the number of replacements needed
+  ins = orig;
+  for (count = 0; tmp = strstr(ins, rep); ++count) {
+    ins = tmp + len_rep;
+  }
+
+  tmp = result = malloc(strlen(orig) + (len_with - len_rep) * count + 1);
+
+  if (!result)
+    return NULL;
+
+  // first time through the loop, all the variable are set correctly
+  // from here on,
+  //    tmp points to the end of the result string
+  //    ins points to the next occurrence of rep in orig
+  //    orig points to the remainder of orig after "end of rep"
+  while (count--) {
+    ins = strstr(orig, rep);
+    len_front = ins - orig;
+    tmp = strncpy(tmp, orig, len_front) + len_front;
+    tmp = strcpy(tmp, with) + len_with;
+    orig += len_front + len_rep; // move to next "end of rep"
+  }
+  strcpy(tmp, orig);
+  return result;
+}
+
 static void strips__push_require_function(duk_context *ctx, const char *id);
 
 static duk_ret_t duk__parse_javascript(duk_context *ctx) {
@@ -259,14 +306,20 @@ static duk_ret_t strips__resolve_module(duk_context *ctx, void *udata) {
         parent_id = duk_get_main(ctx);
       }
 
-      int dl = sy_path_dir(parent_id);
-      char parent_path[dl + 1];
-      strncpy(parent_path, parent_id, dl);
-      parent_path[dl] = '\0';
+      char *parent_path = str_replace(parent_id, "file://", "");
+      if (!parent_path) {
+        duk_type_error(ctx, "could not get parent");
+      }
 
-      char *full_file = sy_path_join(NULL, parent_path, module_id, NULL);
+      int dl = sy_path_dir(parent_path);
+      char parent_dir[dl + 1];
+      strncpy(parent_dir, parent_path, dl);
+      parent_dir[dl] = '\0';
+      free(parent_path);
+      char *full_file = sy_path_join(NULL, parent_dir, module_id, NULL);
 
       if (!full_file) {
+
         duk_type_error(ctx, "error");
       }
 
@@ -277,7 +330,7 @@ static duk_ret_t strips__resolve_module(duk_context *ctx, void *udata) {
       duk_put_prop_string(ctx, obj_idx, "id");
     }
   } else {
-    duk_type_error(ctx, "coudl resolve module: %s", module_id);
+    duk_type_error(ctx, "could resolve module: %s", module_id);
   }
 
   duk_pop(ctx);
