@@ -16,6 +16,7 @@ include_directories(
     vendor/duktape-2.2.1/src
     vendor/syrup-path/include
     vendor/syrup-term/include
+    vendor/syrup-fs/include
     vendor/syrup-term/vendor/syrup-buffer/include
     vendor/which
 )
@@ -33,13 +34,13 @@ endif(STRIPS_BUILD_CXX)
 
 add_subdirectory(vendor/syrup-path)
 add_subdirectory(vendor/syrup-term)
+add_subdirectory(vendor/syrup-fs)
 add_subdirectory(src)
 
-#add_subdirectory(src/io)
+
 if(STRIPS_BUILD_CURL)
     add_subdirectory(src/curl)
 endif(STRIPS_BUILD_CURL)
-#add_subdirectory(src/filesystem)
 
 
 if(STRIPS_BUILD_CXX)

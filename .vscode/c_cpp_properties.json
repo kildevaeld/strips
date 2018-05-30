@@ -15,7 +15,8 @@
                 "${workspaceFolder}/vendor/duktape-2.2.1/src",
                 "${workspaceFolder}/vendor/unity/Unity/src",
                 "${workspaceFolder}/vendor/which",
-                "${workspaceFolder}/vendor/syrup-path/include"
+                "${workspaceFolder}/vendor/syrup-path/include",
+                "${workspaceFolder}/vendor/syrup-fs/include"
             ],
             "defines": [],
             "macFrameworkPath": [

@@ -7,3 +7,6 @@
 [submodule "vendor/syrup-path"]
 	path = vendor/syrup-path
 	url = git@github.com:kildevaeld/syrup-path
+[submodule "vendor/syrup-fs"]
+	path = vendor/syrup-fs
+	url = git@github.com:kildevaeld/syrup-fs.git
