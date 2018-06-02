@@ -6,6 +6,9 @@
 
 extern duk_ret_t duk_io_readdir(duk_context *ctx);
 extern duk_ret_t duk_io_mkdir(duk_context *ctx);
+
+extern duk_ret_t duk_io_getcwd(duk_context *ctx);
+
 extern void strips_io_push_env(duk_context *ctx);
 
 static duk_ret_t duk_os_module(duk_context *ctx) {
@@ -31,6 +34,9 @@ static duk_ret_t duk_os_module(duk_context *ctx) {
   duk_push_c_function(ctx, duk_io_mkdir, 2);
   duk_set_magic(ctx, -1, 1);
   duk_put_prop_string(ctx, -2, "mkdirAll");
+
+  duk_push_c_function(ctx, duk_io_getcwd, 0);
+  duk_put_prop_string(ctx, -2, "getwd");
 
   return 1;
 }

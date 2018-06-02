@@ -6,6 +6,7 @@ set(SOURCES
     strips.c
     private.c
     utils.c
+    helpers.c
     commonjs.c
     commonjs_file.c
     modules.c
@@ -15,9 +16,12 @@ set(SOURCES
     path/path.c
     exec/exec.c
     prompt/prompt.c
+    # OS
     os/os.c
     os/env.c
     os/dir.c
+    os/misc.c
+    # IO
     io/io.c
     io/file.c
     io/reader.c
@@ -25,7 +29,7 @@ set(SOURCES
 )
 
 add_library(strips ${SOURCES})
-target_link_libraries(strips syrup-path syrup-term)
+target_link_libraries(strips syrup-path syrup-term syrup-fs)
 
 if(APPLE)
     target_compile_definitions(strips PRIVATE CS_DLL_EXTENSION=".dylib")

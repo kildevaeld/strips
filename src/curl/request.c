@@ -48,7 +48,7 @@ static bool validate_options(duk_context *ctx, char **err) {
   }
 
   if (duk_has_prop_string(ctx, 0, "progress")) {
-    duk_get_prop_string(ctx, 0, "url");
+    duk_get_prop_string(ctx, 0, "progress");
     if (!duk_is_function(ctx, -1)) {
       duk_pop(ctx);
       *err = "progress should be a function";
@@ -68,10 +68,21 @@ static bool validate_options(duk_context *ctx, char **err) {
     duk_pop(ctx);
   }
 
-  char *fields[] = {"progress", "method", "url", "header", "data"};
+  if (duk_has_prop_string(ctx, 0, "bodyWriter")) {
+    duk_get_prop_string(ctx, 0, "bodyWriter");
+    if (!duk_io_is_writerlike(ctx, -1)) {
+      duk_pop(ctx);
+      *err = "progress should be a buffer, string or a reader";
+      return false;
+    }
+    duk_pop(ctx);
+  }
+
+  char *fields[] = {"progress", "method", "url",
+                    "header",   "data",   "bodyWriter"};
   size_t len = sizeof(fields);
   duk_push_object(ctx);
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 6; i++) {
     if (duk_has_prop_string(ctx, 0, fields[i])) {
       duk_get_prop_string(ctx, 0, fields[i]);
       duk_put_prop_string(ctx, -2, fields[i]);
@@ -250,6 +261,30 @@ static duk_ret_t curl_request_get_data(duk_context *ctx) {
   return 1;
 }
 
+static duk_ret_t curl_request_set_body_writer(duk_context *ctx) {
+  duk_push_this(ctx);
+
+  if (!duk_io_is_writerlike(ctx, 0)) {
+    duk_type_error(ctx, "writer like");
+  }
+
+  duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("_options"));
+  duk_dup(ctx, 0);
+  duk_put_prop_string(ctx, -2, "bodyWriter");
+
+  duk_pop(ctx);
+  return 0;
+}
+
+static duk_ret_t curl_request_get_body_writer(duk_context *ctx) {
+  duk_push_this(ctx);
+
+  duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("_options"));
+  duk_get_prop_string(ctx, -1, "bodyWriter");
+
+  return 1;
+}
+
 void strips_curl_push_request(duk_context *ctx) {
   duk_push_c_function(ctx, curl_request_ctor, 1);
 
@@ -292,6 +327,14 @@ void strips_curl_push_request(duk_context *ctx) {
   duk_push_string(ctx, "data");
   duk_push_c_function(ctx, curl_request_get_data, 0);
   duk_push_c_function(ctx, curl_request_set_data, 1);
+  duk_def_prop(ctx, idx,
+               DUK_DEFPROP_HAVE_GETTER | DUK_DEFPROP_HAVE_SETTER |
+                   DUK_DEFPROP_HAVE_CONFIGURABLE | /* clear */
+                   DUK_DEFPROP_HAVE_ENUMERABLE | DUK_DEFPROP_ENUMERABLE);
+
+  duk_push_string(ctx, "bodyWriter");
+  duk_push_c_function(ctx, curl_request_get_body_writer, 0);
+  duk_push_c_function(ctx, curl_request_set_body_writer, 1);
   duk_def_prop(ctx, idx,
                DUK_DEFPROP_HAVE_GETTER | DUK_DEFPROP_HAVE_SETTER |
                    DUK_DEFPROP_HAVE_CONFIGURABLE | /* clear */

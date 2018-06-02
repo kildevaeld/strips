@@ -36,55 +36,39 @@ void from_duktape(const VM &ctx, duk_idx_t idx, Data &data) {
 } // namespace tem
 
 static int print_help(int ret = 0) {
-  std::cout << "usage: strips2 <path>" << std::endl;
+  std::cout << "usage: zap <path>" << std::endl;
   return ret;
 }
 
-int main(int argc, char *argv[]) {
 
-  std::vector<std::string> args(argv + 1, argv + argc);
-
-  if (argc < 2) {
-    return print_help(1);
-  } else if (args[0] == "-h" || args[0] == "--help") {
-    return print_help();
-  } else if (args[0][0] == '-') {
-    return print_help(1);
-  }
-
-  VM vm;
+static void init_vm(VM &vm, int argc, char **argv) {
   strips_path_init(vm.ctx());
   strips_prompt_init(vm.ctx());
   strips_io_init(vm.ctx());
   strips_curl_init(vm.ctx());
   strips_exec_init(vm.ctx());
   strips_os_init(vm.ctx(), argc, argv, NULL);
+}
 
-  /*args[0] = csystem::path::join(csystem::standardpaths::cwd(), args[0]);
 
-  auto process = vm.object({{"argv", args},
-                            {"platform", cs_platform_name()},
-                            {"cwd", [](VM &vm) {
-                               vm.push(csystem::standardpaths::cwd());
-                               return 1;
-                             }}});
+int main(int argc, char *argv[]) {
 
-  vm.global().set("process", process);
+  std::vector<std::string> args(argv + 1, argv + argc);
 
-  std::string fname = argv[1];
-  int idx;
-  if (!cs_file_exists(argv[1]) && cs_path_ext(argv[1], &idx) == 0) {
-    fname = fname + ".js";
-    if (!cs_file_exists(fname.c_str())) {
-      std::cerr << "File not found" << std::endl;
-      return 3;
-    }
-  } else {
-    std::cerr << "File not found " << cs_path_ext(argv[1], &idx) << std::endl;
-    return 3;
-  }*/
 
-  // std::string path(argv[1]);
+  if (argc < 2) {
+    return print_help(1);
+  } else if (args[0] == "-h" || args[0] == "--help") {
+    return print_help();
+  } /*else if (args[0][0] == '-') {
+    return print_help(1);
+  }*/ else if (args[1] == "--version" ||args[1] == "-v" || args[1] == "version") {
+    std::cout << "strips 0.0.1" << std::endl;
+    return 0; 
+  }
+
+  VM vm;
+  init_vm(vm, argc,argv);
 
   char path[PATH_MAX];
 

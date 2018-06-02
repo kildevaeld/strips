@@ -1,3 +1,4 @@
+#include "../helpers.h"
 #include <curl/curl.h>
 #include <duktape.h>
 #include <stdbool.h>
@@ -5,7 +6,6 @@
 #include <strips/definitions.h>
 #include <strips/io/io.h>
 #include <strips/utils.h>
-
 struct curl_bag {
   strips_bag_t *body;
   strips_bag_t *header;
@@ -15,11 +15,15 @@ struct curl_bag {
 
 static size_t curl_request_write_cb(char *ptr, size_t size, size_t nmemb,
                                     void *userdata) {
+
   size_t realsize = size * nmemb;
   strips_bag_t *mem = (strips_bag_t *)userdata;
-  duk_push_ref(mem->ctx, mem->ref);
 
-  if (duk_is_dynamic_buffer(mem->ctx, -1)) {
+  duk_push_ref(mem->ctx, mem->ref);
+  duk_write_buffer_or_writer(mem, ptr, realsize);
+
+  duk_pop(mem->ctx);
+  /*if (duk_is_dynamic_buffer(mem->ctx, -1)) {
     mem->data = duk_resize_buffer(mem->ctx, -1, mem->size + realsize);
     duk_pop(mem->ctx);
     if (mem->data == NULL) {
@@ -39,7 +43,7 @@ static size_t curl_request_write_cb(char *ptr, size_t size, size_t nmemb,
       duk_throw(mem->ctx);
     }
     duk_pop(mem->ctx);
-  }
+  }*/
 
   return realsize;
 }
@@ -254,9 +258,13 @@ static bool duk_curl_request(duk_context *ctx, CURL *curl,
   }
 
   // Setup body writer function
+  duk_get_prop_string(ctx, idx, "bodyWriter");
   strips_bag_t *body = bags->body;
-  body->data = duk_push_dynamic_buffer(ctx, 0);
   body->size = 0;
+  if (duk_is_undefined(ctx, -1)) {
+    duk_pop(ctx);
+    body->data = duk_push_dynamic_buffer(ctx, 0);
+  }
   body->ref = duk_ref(ctx);
 
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_request_write_cb);

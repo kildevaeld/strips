@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <sys/stat.h>
+#include <syrup/fs.h>
 
 duk_ret_t duk_io_readdir(duk_context *ctx) {
   const char *path = duk_require_string(ctx, 0);
@@ -37,43 +38,6 @@ duk_ret_t duk_io_readdir(duk_context *ctx) {
   return 0;
 }
 
-static int mkdir_p(const char *path, mode_t mod) {
-  /* Adapted from http://stackoverflow.com/a/2336245/119527 */
-  const size_t len = strlen(path);
-  char _path[PATH_MAX];
-  char *p;
-
-  errno = 0;
-
-  /* Copy string so its mutable */
-  if (len > sizeof(_path) - 1) {
-    errno = ENAMETOOLONG;
-    return -1;
-  }
-  strcpy(_path, path);
-
-  /* Iterate the string */
-  for (p = _path + 1; *p; p++) {
-    if (*p == '/') {
-      /* Temporarily truncate */
-      *p = '\0';
-
-      if (mkdir(_path, mod) != 0) {
-        if (errno != EEXIST)
-          return -1;
-      }
-
-      *p = '/';
-    }
-  }
-
-  if (mkdir(_path, mod) != 0) {
-    if (errno != EEXIST)
-      return -1;
-  }
-
-  return 0;
-}
 
 duk_ret_t duk_io_mkdir(duk_context *ctx) {
   const char *path = duk_require_string(ctx, 0);
@@ -85,7 +49,7 @@ duk_ret_t duk_io_mkdir(duk_context *ctx) {
   if (magic) {
     ret = mkdir(path, mod);
   } else {
-    ret = mkdir_p(path, mod);
+    ret = sy_mkdir_p(path, mod);
   }
 
   if (ret != 0) {

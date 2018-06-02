@@ -65,6 +65,9 @@ static duk_ret_t duk_os_env_ownkeys(duk_context *ctx) {
   return 1;
 }
 
+
+
+
 void strips_io_push_env(duk_context *ctx) {
   duk_push_object(ctx);
   duk_push_c_function(ctx, duk_os_env_get, 2);
@@ -75,5 +78,7 @@ void strips_io_push_env(duk_context *ctx) {
   duk_put_prop_string(ctx, -2, "has");
   duk_push_c_function(ctx, duk_os_env_ownkeys, 1);
   duk_put_prop_string(ctx, -2, "ownKeys");
+  duk_push_c_function(ctx, duk_os_env_del, 2);
+  duk_put_prop_string(ctx, -2, "deleteProperty");
   duk_push_proxy(ctx, 0);
 }
