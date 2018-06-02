@@ -3,7 +3,6 @@ const curl = require('curl'),
 
 const re = new curl.Request({
     url: "https://google.com",
-
 });
 
 

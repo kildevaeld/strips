@@ -40,7 +40,6 @@ static int print_help(int ret = 0) {
   return ret;
 }
 
-
 static void init_vm(VM &vm, int argc, char **argv) {
   strips_path_init(vm.ctx());
   strips_prompt_init(vm.ctx());
@@ -50,11 +49,9 @@ static void init_vm(VM &vm, int argc, char **argv) {
   strips_os_init(vm.ctx(), argc, argv, NULL);
 }
 
-
 int main(int argc, char *argv[]) {
 
   std::vector<std::string> args(argv + 1, argv + argc);
-
 
   if (argc < 2) {
     return print_help(1);
@@ -62,13 +59,14 @@ int main(int argc, char *argv[]) {
     return print_help();
   } /*else if (args[0][0] == '-') {
     return print_help(1);
-  }*/ else if (args[1] == "--version" ||args[1] == "-v" || args[1] == "version") {
-    std::cout << "strips 0.0.1" << std::endl;
-    return 0; 
+  }*/
+  else if (args[1] == "--version" || args[1] == "-v" || args[1] == "version") {
+    std::cout << "strips 0.0.2" << std::endl;
+    return 0;
   }
 
   VM vm;
-  init_vm(vm, argc,argv);
+  init_vm(vm, argc, argv);
 
   char path[PATH_MAX];
 

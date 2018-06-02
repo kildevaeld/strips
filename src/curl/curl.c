@@ -24,11 +24,10 @@ static duk_ret_t strips_curl_module(duk_context *ctx) {
   duk_dup(ctx, -2);
   duk_put_prop_string(ctx, -2, "CurlRequest");
   duk_pop(ctx);
-
   duk_put_prop_string(ctx, -2, "Request");
 
   strips_curl_push_curl_request(ctx);
-  duk_put_prop_string(ctx, -2, "req");
+  duk_put_prop_string(ctx, -2, "do");
 
   duk_commonjs_wrapl(ctx, (const char *)curl_js, curl_js_len);
   duk_dup(ctx, -2);
