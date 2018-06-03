@@ -12,6 +12,6 @@
                 method: key.toUpperCase()
             }));
         }
-        return exports.req(request);
+        return exports.do(request);
     };
 });

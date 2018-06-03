@@ -7,6 +7,6 @@ const re = new curl.Request({
 
 
 
-const resp = curl.req(re);
+const resp = curl.do(re);
 
 console.log('done');

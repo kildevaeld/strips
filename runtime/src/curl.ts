@@ -1,5 +1,4 @@
-var _slice = Array.prototype.slice;
-
+const _slice = Array.prototype.slice;
 
 ['get', 'post', 'put', 'patch', 'head', 'del']
     .forEach(function (key) {
@@ -14,6 +13,6 @@ var _slice = Array.prototype.slice;
                     method: key.toUpperCase()
                 }));
             }
-            return exports.req(request);
+            return exports.do(request);
         }
     });
