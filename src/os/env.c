@@ -7,7 +7,8 @@ extern char **environ;
 static size_t indexof(const char *path, char c) {
   size_t len = strlen(path);
   for (size_t i = 0; i < len; i++) {
-    if (path[i] == c) return i;
+    if (path[i] == c)
+      return i;
   }
 
   return -1;
@@ -34,7 +35,7 @@ static duk_ret_t duk_os_env_set(duk_context *ctx) {
 }
 
 static duk_ret_t duk_os_env_has(duk_context *ctx) {
-  duk_push_boolean(ctx, getenv(duk_require_string(ctx, 1)));
+  duk_push_boolean(ctx, getenv(duk_require_string(ctx, 1)) != NULL);
   return 1;
 }
 
@@ -64,9 +65,6 @@ static duk_ret_t duk_os_env_ownkeys(duk_context *ctx) {
 
   return 1;
 }
-
-
-
 
 void strips_io_push_env(duk_context *ctx) {
   duk_push_object(ctx);

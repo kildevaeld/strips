@@ -1,9 +1,9 @@
 #include "commonjs_file.h"
-#include "file-utils.h"
 #include "private.h"
 #include <dlfcn.h>
 #include <strips/definitions.h>
 #include <strips/utils.h>
+#include <syrup/fs.h>
 #include <syrup/path.h>
 
 static bool cs_is_dll(const char *filename) {
@@ -16,7 +16,7 @@ static bool file_exists(char *buffer, size_t len, const char *ext) {
   size_t elen = strlen(ext);
   strcpy(buffer + len, ext);
   buffer[len + elen] = '\0';
-  if (!cs_file_exists(buffer)) {
+  if (!sy_file_exists(buffer)) {
     char buf[len + elen + 4 + 1];
 
     size_t bidx, didx;
@@ -31,7 +31,7 @@ static bool file_exists(char *buffer, size_t len, const char *ext) {
     memcpy(buf + didx, "/lib", 4);
     memcpy(buf + didx + 4, buffer + bidx, blen);
     buf[len + elen + 3] = '\0';
-    if (!cs_file_exists(buf)) {
+    if (!sy_file_exists(buf)) {
       return false;
     }
     strcpy(buffer, buf);
@@ -66,7 +66,7 @@ duk_ret_t cjs_resolve_file(duk_context *ctx) {
       duk_put_prop_index(ctx, array, al++);
     }
 
-  } else if (cs_file_exists(full_file)) {
+  } else if (sy_file_exists(full_file)) {
     duk_push_string(ctx, full_file);
     duk_put_prop_index(ctx, array, al++);
   }
@@ -174,13 +174,13 @@ duk_ret_t cjs_load_file(duk_context *ctx) {
     } else {
 
       const char *file = duk_require_string(ctx, -1);
-      int size = cs_file_size(file);
+      int size = sy_file_size(file);
       if (size == 0) {
         duk_push_string(ctx, "");
         break;
       }
       char *buffer = duk_push_fixed_buffer(ctx, size);
-      if (!cs_read_file(file, buffer, size, &size)) {
+      if (!sy_read_file(file, buffer, size, &size)) {
         duk_type_error(ctx, "could not read %s", file);
       }
 

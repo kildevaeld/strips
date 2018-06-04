@@ -12,7 +12,7 @@ set(SOURCES
     modules.c
     console.c
     types.c
-    file-utils.c
+    #file-utils.c
     path/path.c
     exec/exec.c
     prompt/prompt.c

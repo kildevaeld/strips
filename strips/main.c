@@ -10,7 +10,7 @@
 #include <strips/prompt/prompt.h>
 
 // Run a single file, one time
-static int run_single(const char *path,int argc, const char **argv) {
+static int run_single(const char *path, int argc, char **argv) {
 
   // dukext_config_t config;
   // dukext_config_init(&config);
@@ -49,7 +49,7 @@ end:
   return ret;
 }
 
-int main(int argc, const char **argv) {
+int main(int argc, char **argv) {
 
   if (argc == 1) {
     fprintf(stderr, "usage: strips <path>\n");

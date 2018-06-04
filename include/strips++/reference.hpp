@@ -19,8 +19,7 @@ enum class Type {
   Undefined,
   Function,
   Buffer,
-  Date,
-  Invalid
+  Date
 };
 
 std::ostream &operator<<(std::ostream &s, const Type &);

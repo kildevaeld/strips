@@ -6,7 +6,7 @@
 #include <syrup/path.h>
 
 // You must free the result if result is non-NULL.
-static char *str_replace(char *orig, char *rep, char *with) {
+static char *str_replace(const char *orig, char *rep, char *with) {
   char *result;  // the return string
   char *ins;     // the next insert point
   char *tmp;     // varies
@@ -26,8 +26,8 @@ static char *str_replace(char *orig, char *rep, char *with) {
   len_with = strlen(with);
 
   // count the number of replacements needed
-  ins = orig;
-  for (count = 0; tmp = strstr(ins, rep); ++count) {
+  ins = (char *)orig;
+  for (count = 0; (tmp = strstr(ins, rep)); ++count) {
     ins = tmp + len_rep;
   }
 

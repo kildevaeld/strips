@@ -41,7 +41,7 @@ static duk_ret_t duk_os_module(duk_context *ctx) {
   return 1;
 }
 
-void strips_os_init(duk_context *ctx, int argc, char *argv[], char **env) {
+void strips_os_init(duk_context *ctx, int argc, char **argv, char **env) {
   if (strips_has_entry(ctx, "os")) {
     return;
   }

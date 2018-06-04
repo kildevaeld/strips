@@ -16,7 +16,9 @@
                 "${workspaceFolder}/vendor/unity/Unity/src",
                 "${workspaceFolder}/vendor/which",
                 "${workspaceFolder}/vendor/syrup-path/include",
-                "${workspaceFolder}/vendor/syrup-fs/include"
+                "${workspaceFolder}/vendor/syrup-fs/include",
+                "${workspaceFolder}/vendor/syrup-term/vendor/syrup-buffer/include",
+                "${workspaceFolder}/vendor/syrup-term/include"
             ],
             "defines": [],
             "macFrameworkPath": [

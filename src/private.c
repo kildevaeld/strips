@@ -14,6 +14,8 @@ bool strips_push_entry(duk_context *ctx, const char *name) {
   duk_dup(ctx, -2);
   duk_put_prop_string(ctx, -2, name);
   duk_pop_2(ctx);
+
+  return true;
 }
 
 bool strips_get_entry(duk_context *ctx, const char *name) {

@@ -53,6 +53,7 @@ static duk_ret_t fn_fin(duk_context *ctx) {
     fn_bag *bag = (fn_bag *)duk_get_pointer(ctx, -1);
     delete bag;
   }
+  return 0;
 }
 
 static duk_ret_t fn_apply(duk_context *ctx) {

@@ -28,19 +28,18 @@ std::ostream &operator<<(std::ostream &s, const Type &type) {
   case Type::Function:
     s << std::string("Function");
     break;
-  case Type::Buffer: {
+  case Type::Buffer:
     s << std::string("Buffer");
-
-  } break;
-  case Type::Object: {
+    break;
+  case Type::Object:
     s << std::string("Object");
-  } break;
+    break;
   case Type::Date:
     s << std::string("Date");
     break;
-  case Type::Array: {
+  case Type::Array:
     s << std::string("Array");
-  } break;
+    break;
   }
   return s;
 }
@@ -144,6 +143,8 @@ bool Reference::valid() const { return ptr->valid(); }
 int Reference::ref() const { return ptr->ref; }
 
 void Reference::set_ref(int ref) {
+  if (!valid())
+    return;
   if (ptr->ref) {
     duk_unref(ptr->ctx, ptr->ref);
   }
@@ -171,8 +172,6 @@ static Type get_type(duk_context *ctx) {
     return Type::Number;
   case DUK_TYPE_NULL:
     return Type::Null;
-  case DUK_TYPE_UNDEFINED:
-    return Type::Undefined;
   case DUK_TYPE_BUFFER:
     return Type::Buffer;
   case DUK_TYPE_OBJECT: {
@@ -186,9 +185,9 @@ static Type get_type(duk_context *ctx) {
       return Type::Object;
     }
   }
+  default:
+    return Type::Undefined;
   }
-
-  return Type::Invalid;
 }
 
 Type Reference::type() const {
@@ -198,7 +197,10 @@ Type Reference::type() const {
   return type;
 }
 
-void Reference::set_ctx(duk_context *ctx) { ptr->ctx = ctx; }
+void Reference::set_ctx(duk_context *ctx) {
+  set_ref(0);
+  ptr->ctx = ctx;
+}
 
 std::ostream &operator<<(std::ostream &s, const Reference &r) {
   r.push();

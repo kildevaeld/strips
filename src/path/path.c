@@ -1,3 +1,4 @@
+#include <strips/modules.h>
 #include <strips/path/path.h>
 #include <syrup/path.h>
 
