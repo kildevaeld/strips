@@ -109,9 +109,6 @@ int main(int argc, char *argv[]) {
     return 4;
   }
 
-  /*if (!result.is<Type::Invalid>()) {
-    std::cout << result << s  td::endl;
-  }*/
-
+ 
   return 0;
 }
