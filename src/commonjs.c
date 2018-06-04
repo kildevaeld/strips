@@ -599,5 +599,8 @@ duk_ret_t strips_commonjs_eval_main(duk_context *ctx, const char *path) {
   duk_dup(ctx, 0);
   /* [ ... source module source ] */
 
-  return duk_safe_call(ctx, strips__eval_module_source, NULL, 2, 1);
+  duk_int_t ret = duk_safe_call(ctx, strips__eval_module_source, NULL, 2, 1);
+  duk_remove(ctx, -2);
+
+  return ret;
 }
