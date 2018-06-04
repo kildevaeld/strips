@@ -12,17 +12,6 @@
 // Run a single file, one time
 static int run_single(const char *path, int argc, char **argv) {
 
-  // dukext_config_t config;
-  // dukext_config_init(&config);
-  // config.max_heap = 1024 << 24;
-  // config.module_types = DUKEXT_FILE_TYPE;
-  // config.modules = DUKEXT_MOD_FILE | DUKEXT_MOD_PROMPT;
-
-  /*dukext_t *vm;
-  if (!(vm = dukext_create(config))) {
-    printf("could not init duk\n");
-    return 1;
-  };*/
   duk_context *ctx = duk_create_heap_default();
 
   strips_initialize(ctx);
