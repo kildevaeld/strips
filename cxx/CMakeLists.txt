@@ -3,8 +3,6 @@ set(SOURCES
     vm.cpp
     converters.cpp
     object.cpp
-    array.cpp
-    value.cpp
     reference.cpp
 )
 

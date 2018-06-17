@@ -1,5 +1,6 @@
 #include <strips++/converters.hpp>
 #include <strips++/vm.hpp>
+#include <strips/modules.h>
 #include <strips/strips.h>
 #include <strips/utils.h>
 
@@ -77,28 +78,6 @@ Array VM::array() const {
   return std::move(a);
 }
 
-static duk_ret_t class_ctor(duk_context *ctx) { return 0; }
-
-/*Function VM::ctor(const Object &o) const {
-
-  if (o.has("constructor")) {
-    o.get("constructor").push();
-    o.remove("constructor");
-  } else {
-    duk_push_c_function(ctx(), class_ctor, 0);
-  }
-
-  o.push();
-
-  duk_put_prop_string(ctx(), -2, "prototype");
-
-  Function fn(ctx(), -1);
-
-  duk_pop(ctx());
-
-  return std::move(fn);
-}*/
-
 Object VM::global() const {
   duk_push_global_object(ctx());
   Object o(ctx(), -1);
@@ -135,6 +114,20 @@ VM &VM::pop(int count) {
 VM &VM::remove(duk_idx_t idx) {
   duk_remove(ctx(), idx);
   return *this;
+}
+
+void VM::register_module(const std::string &name,
+                         std::function<duk_ret_t(VM &vm)> fn) {
+
+  to_duktape(ctx(), fn);
+
+  duk_idx_t idx = duk_normalize_index(ctx(), -1);
+  if (duk_module_add_fn_idx(ctx(), name.c_str(), idx) != STRIPS_OK) {
+    pop();
+    throw std::runtime_error("could register module");
+  }
+
+  pop();
 }
 
 void VM::set_ctx(duk_context *ctx, bool own) {

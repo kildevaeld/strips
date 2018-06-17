@@ -10,6 +10,9 @@ extern "C" {
 typedef duk_ret_t (*strips_module_resolve_cb)(duk_context *);
 typedef duk_ret_t (*strips_module_load_cb)(duk_context *);
 
+strips_ret_t duk_module_add_fn_idx(duk_context *ctx, const char *name,
+                                   duk_idx_t idx);
+
 strips_ret_t duk_module_add_fn(duk_context *ctx, const char *name,
                                duk_c_function fn);
 

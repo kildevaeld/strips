@@ -70,7 +70,6 @@ ReferencePrivate *ReferencePrivate::clone() const {
   duk_push_ref(ctx, ref);
   duk_idx_t nidx = duk_normalize_index(ctx, -1);
   auto type = get_type(ctx);
-  std::cout << "clone " << type << std::endl;
   switch (type) {
   case Type::Bool:
   case Type::Undefined:
@@ -143,11 +142,7 @@ bool Reference::valid() const { return ptr->valid(); }
 int Reference::ref() const { return ptr->ref; }
 
 void Reference::set_ref(int ref) {
-  if (!valid())
-    return;
-  if (ptr->ref) {
-    duk_unref(ptr->ctx, ptr->ref);
-  }
+  duk_unref(ptr->ctx, ptr->ref);
   ptr->ref = ref;
 }
 

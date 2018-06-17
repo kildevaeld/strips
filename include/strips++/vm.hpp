@@ -28,11 +28,14 @@ public:
 
   Object object(const std::map<std::string, Any> &list) {
     push(list);
+
     auto o = pop<Object>();
+
     return std::move(o);
   }
 
   Object object() const;
+
   template <typename... Args> Array array(Args... args) {
     duk_push_array(ctx());
     int size = 0;
@@ -44,12 +47,12 @@ public:
         args...);
     return std::move(pop<Array>());
   }
+
   Array array() const;
-  Function ctor(const Object &o) const;
 
   template <class T> Reference create(const T &v) {
     to_duktape(ctx(), v);
-    Reference ref(ctx());
+    Reference ref(ctx(), -1);
     duk_pop(ctx());
     return std::move(ctx());
   }
@@ -68,11 +71,6 @@ public:
     to_duktape(ctx(), v);
     return *this;
   }
-
-  /*emplate <class T> const VM &push(T &v) {
-    to_duktape(ctx(), v);
-    return *this;
-  }*/
 
   template <class T = Reference> T get(duk_idx_t idx = -1) const {
     T v;
@@ -103,6 +101,9 @@ public:
   Object global() const;
   Object stash() const;
   Object require(const std::string &name) const;
+
+  void register_module(const std::string &name,
+                       std::function<duk_ret_t(VM &vm)> fn);
 
   const VM &dump() const;
 

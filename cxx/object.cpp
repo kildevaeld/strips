@@ -9,6 +9,15 @@ Object::Object(duk_context *ctx) : Reference(ctx) {}
 Object::Object(duk_context *ctx, duk_idx_t idx) : Reference(ctx, idx) {}
 Object::Object(const Object &o) : Reference(o) {}
 Object::Object(Object &&o) : Reference(std::move(o)) {}
+/*Object::Object(Object &&o) : Reference() {
+  set_ctx(o.ctx());
+  o.push();
+  int ref = duk_ref(o.ctx());
+  o.set_ref(0);
+  o.set_ctx(0);
+  set_ref(ref);
+}**/
+
 Object::~Object() {}
 
 bool Object::has(const std::string &name) const {
@@ -59,18 +68,6 @@ std::vector<std::string> Object::keys() const {
 }
 
 size_t Object::size() const { return keys().size(); }
-
-// oid Object::push() const { duk_push_ref(ctx(), d->ref); }
-
-/*Object Object::clone() const {
-  duk_get_global_string(ctx(), "Object");
-  duk_push_string(ctx(), "create");
-  duk_push_ref(ctx(), d->ref);
-  duk_pcall_prop(ctx(), -3, 1);
-  Object ob(ctx(), duk_ref(ctx()));
-  duk_pop(ctx());
-  return std::move(ob);
-}*/
 
 std::ostream &operator<<(std::ostream &o, const Object &v) {
   v.push();

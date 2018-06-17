@@ -10,14 +10,6 @@ void duk_write_buffer_or_writer(strips_bag_t *bag, char *buffer,
   duk_push_ref(bag->ctx, bag->ref);
   if (duk_is_buffer(ctx, -1)) {
 
-    /*duk_size_t size, nsize;
-    char *out = duk_get_buffer_data(ctx, -1, &size);
-    duk_dump_context_stdout(ctx);
-    nsize = size + in_size;
-    out = duk_resize_buffer(ctx, -1, nsize);
-    int idx = size;
-
-    memcpy(out + idx, buffer, size);*/
     bag->data = duk_resize_buffer(bag->ctx, -1, bag->size + in_size);
     duk_pop(bag->ctx);
     if (bag->data == NULL) {

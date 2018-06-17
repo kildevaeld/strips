@@ -11,29 +11,6 @@
 #include <syrup/path.h>
 
 using namespace strips;
-namespace tem {
-
-struct Data {
-  std::string name;
-  std::string content;
-};
-
-void to_duktape(const VM &ctx, const Data &data) {
-  /*duk_push_object(ctx);
-  duk*/
-  auto o = ctx.object();
-  o.set("name", data.name);
-  o.set("content", data.content);
-  o.push();
-}
-
-void from_duktape(const VM &ctx, duk_idx_t idx, Data &data) {
-  auto o = ctx.get<Object>(idx);
-  data.name = o.get<std::string>("name");
-  data.content = o.get<std::string>("content");
-}
-
-} // namespace tem
 
 static int print_help(int ret = 0) {
   std::cout << "usage: zap <path>" << std::endl;
@@ -47,6 +24,18 @@ static void init_vm(VM &vm, int argc, char **argv) {
   strips_curl_init(vm.ctx());
   strips_exec_init(vm.ctx());
   strips_os_init(vm.ctx(), argc, argv, NULL);
+
+  vm.register_module("cpp", [](VM &vm) {
+    auto fn = vm.push([](VM &vm) { return 0; }).pop<Function>();
+
+    fn.prototype({{"name", "cpp"}, {"call", [](VM &vm) { return 0; }}});
+
+    vm.object({{"Test", fn}}).push();
+
+    // auto o = vm.object({{"name", "CPP"}, {"fn", [](VM &vm) { return 1; }}});
+
+    return 1;
+  });
 }
 
 int main(int argc, char *argv[]) {
@@ -109,6 +98,5 @@ int main(int argc, char *argv[]) {
     return 4;
   }
 
- 
   return 0;
 }
