@@ -17,17 +17,15 @@ static int print_help(int ret = 0) {
   return ret;
 }
 
-static void init_vm(VM &vm, int argc, char **argv) {
-  strips_path_init(vm.ctx());
-  strips_prompt_init(vm.ctx());
-  strips_io_init(vm.ctx());
-  strips_curl_init(vm.ctx());
-  strips_exec_init(vm.ctx());
-  strips_os_init(vm.ctx(), argc, argv, NULL);
+class Factory {
 
-  vm.register_module("cpp", [](VM &vm) {
+public:
+  duk_ret_t operator()(VM &vm) {
     auto fn = vm.push([](VM &vm) {
-                  vm.get_this();
+                  vm.get_this().set_finalizer([](VM &vm) {
+                    std::cout << "quit" << std::endl;
+                    return 0;
+                  });
                   return 0;
                 })
                   .pop<Function>();
@@ -36,10 +34,19 @@ static void init_vm(VM &vm, int argc, char **argv) {
 
     vm.object({{"Test", fn}}).push();
 
-    // auto o = vm.object({{"name", "CPP"}, {"fn", [](VM &vm) { return 1; }}});
-
     return 1;
-  });
+  }
+};
+
+static void init_vm(VM &vm, int argc, char **argv) {
+  strips_path_init(vm.ctx());
+  strips_prompt_init(vm.ctx());
+  strips_io_init(vm.ctx());
+  strips_curl_init(vm.ctx());
+  strips_exec_init(vm.ctx());
+  strips_os_init(vm.ctx(), argc, argv, NULL);
+
+  vm.register_module("cpp", Factory());
 }
 
 int main(int argc, char *argv[]) {

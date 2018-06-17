@@ -1,3 +1,8 @@
 const cpp = require('cpp');
 
-console.log((new cpp.Test).name);
+
+const test = new cpp.Test();
+
+console.log(test.name);
+
+test.call();
