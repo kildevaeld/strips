@@ -90,7 +90,6 @@ public:
     duk_pop(ctx());
   }
 
-  
   template <class T = Reference> T get(const std::string &name) const {
     push();
     T v;
@@ -156,6 +155,8 @@ public:
 
   std::vector<std::string> keys() const;
   bool valid() const override;
+
+  void set_finalizer(std::function<duk_ret_t(VM &vm)> fn);
 
   size_t size() const;
   iterator begin() { return iterator(this); }

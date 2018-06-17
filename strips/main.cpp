@@ -26,7 +26,11 @@ static void init_vm(VM &vm, int argc, char **argv) {
   strips_os_init(vm.ctx(), argc, argv, NULL);
 
   vm.register_module("cpp", [](VM &vm) {
-    auto fn = vm.push([](VM &vm) { return 0; }).pop<Function>();
+    auto fn = vm.push([](VM &vm) {
+                  vm.get_this();
+                  return 0;
+                })
+                  .pop<Function>();
 
     fn.prototype({{"name", "cpp"}, {"call", [](VM &vm) { return 0; }}});
 

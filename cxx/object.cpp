@@ -67,6 +67,13 @@ std::vector<std::string> Object::keys() const {
   return std::move(v);
 }
 
+void Object::set_finalizer(std::function<duk_ret_t(VM &vm)> fn) {
+  push();
+  to_duktape(ctx(), fn);
+  duk_set_finalizer(ctx(), -2);
+  duk_pop(ctx());
+}
+
 size_t Object::size() const { return keys().size(); }
 
 std::ostream &operator<<(std::ostream &o, const Object &v) {
