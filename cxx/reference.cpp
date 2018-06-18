@@ -142,7 +142,8 @@ bool Reference::valid() const { return ptr->valid(); }
 int Reference::ref() const { return ptr->ref; }
 
 void Reference::set_ref(int ref) {
-  duk_unref(ptr->ctx, ptr->ref);
+  if (ptr->ctx)
+    duk_unref(ptr->ctx, ptr->ref);
   ptr->ref = ref;
 }
 
@@ -169,6 +170,8 @@ static Type get_type(duk_context *ctx) {
     return Type::Null;
   case DUK_TYPE_BUFFER:
     return Type::Buffer;
+  case DUK_TYPE_LIGHTFUNC:
+    return Type::Function;
   case DUK_TYPE_OBJECT: {
     if (duk_is_date(ctx, -1)) {
       return Type::Date;
@@ -193,6 +196,8 @@ Type Reference::type() const {
 }
 
 void Reference::set_ctx(duk_context *ctx) {
+  if (ptr->ctx == ctx)
+    return;
   set_ref(0);
   ptr->ctx = ctx;
 }

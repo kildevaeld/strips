@@ -11,12 +11,12 @@ namespace strips {
 
 class VM;
 class Object;
+class Array;
 class Reference;
 class Any;
 class Function;
 
 void to_duktape(duk_context *ctx, std::function<duk_ret_t(VM &)> fn);
-// void to_duktape(duk_context *ctx, std::function<duk_ret_t(const VM &)> fn);
 
 void to_duktape(duk_context *ctx, const char *str);
 
@@ -25,10 +25,6 @@ void to_duktape(duk_context *ctx, duk_c_function fn);
 void to_duktape(duk_context *ctx, const std::string &str);
 
 void from_duktape(duk_context *ctx, duk_idx_t idx, std::string &str);
-
-// void to_duktape(duk_context *ctx, const bool &str);
-
-// void from_duktape(duk_context *ctx, duk_idx_t idx, bool &str);
 
 template <class T,
           typename std::enable_if<std::is_integral<T>::value>::type * = nullptr>
@@ -79,7 +75,7 @@ void from_duktape(duk_context *ctx, duk_idx_t idx, std::vector<T> &v) {
     duk_get_prop_index(ctx, aidx, i);
     from_duktape(ctx, -1, a);
     duk_pop(ctx);
-    v.push_back(a);
+    v.push_back(std::move(a));
   }
 }
 
@@ -125,6 +121,7 @@ void to_duktape(duk_context *ctx, const std::map<std::string, Any> &v);
 
 void to_duktape(duk_context *ctx, const Object &o);
 void from_duktape(duk_context *ctx, duk_idx_t idx, Object &o);
+void from_duktape(duk_context *ctx, duk_idx_t idx, Array &o);
 
 void to_duktape(duk_context *ctx, const Reference &o);
 void from_duktape(duk_context *ctx, duk_idx_t idx, Reference &o);

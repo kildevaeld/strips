@@ -9,15 +9,6 @@ Object::Object(duk_context *ctx) : Reference(ctx) {}
 Object::Object(duk_context *ctx, duk_idx_t idx) : Reference(ctx, idx) {}
 Object::Object(const Object &o) : Reference(o) {}
 Object::Object(Object &&o) : Reference(std::move(o)) {}
-/*Object::Object(Object &&o) : Reference() {
-  set_ctx(o.ctx());
-  o.push();
-  int ref = duk_ref(o.ctx());
-  o.set_ref(0);
-  o.set_ctx(0);
-  set_ref(ref);
-}**/
-
 Object::~Object() {}
 
 bool Object::has(const std::string &name) const {
@@ -55,6 +46,7 @@ std::vector<std::string> Object::keys() const {
     duk_pop(ctx());
     return v;
   }
+
   duk_size_t len = duk_get_length(ctx(), -1);
 
   for (int i = 0; i < len; i++) {
@@ -70,6 +62,7 @@ std::vector<std::string> Object::keys() const {
 void Object::set_finalizer(std::function<duk_ret_t(VM &vm)> fn) {
   push();
   to_duktape(ctx(), fn);
+
   duk_set_finalizer(ctx(), -2);
   duk_pop(ctx());
 }

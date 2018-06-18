@@ -1,5 +1,4 @@
 #include <iostream>
-#include <strips++/value.hpp>
 #include <strips++/vm.hpp>
 #include <strips/curl/curl.h>
 #include <strips/exec/exec.h>
@@ -16,6 +15,47 @@ static int print_help(int ret = 0) {
   std::cout << "usage: zap <path>" << std::endl;
   return ret;
 }
+
+class Mo : public ModuleResolver {
+
+public:
+  std::string name() const { return "weed"; }
+  virtual std::vector<std::string> resolve(const std::string &id,
+                                           const std::string &parent) const {
+    std::vector<std::string> list;
+    if (id == "testmig") {
+      list.push_back("hello.js");
+    } else if (id == "text.txt") {
+      list.push_back("text.txt");
+    }
+
+    return list;
+  }
+  virtual ModuleResolverLoadResult
+  load(const std::vector<std::string> &files) const {
+
+    ModuleResolverLoadResult result;
+
+    for (auto a : files) {
+      if (a == "text.txt")
+        result.emplace_back(a, "Hello, World");
+      else
+        result.emplace_back(a, "exports.test = 'Hello world'");
+    }
+
+    return std::move(result);
+  }
+};
+
+class MP : public ModuleParser {
+
+public:
+  MP() {}
+  virtual std::string extension() const { return ".txt"; }
+  virtual void parse(const Object &module, const std::string &content) const {
+    module.set("exports", content);
+  }
+};
 
 class Factory {
 
@@ -47,6 +87,8 @@ static void init_vm(VM &vm, int argc, char **argv) {
   strips_os_init(vm.ctx(), argc, argv, NULL);
 
   vm.register_module("cpp", Factory());
+  vm.set_module_resolver(new Mo());
+  vm.set_module_parser(new MP());
 }
 
 int main(int argc, char *argv[]) {
@@ -57,11 +99,9 @@ int main(int argc, char *argv[]) {
     return print_help(1);
   } else if (args[0] == "-h" || args[0] == "--help") {
     return print_help();
-  } /*else if (args[0][0] == '-') {
-    return print_help(1);
-  }*/
-  else if (args[1] == "--version" || args[1] == "-v" || args[1] == "version") {
-    std::cout << "strips 0.0.2" << std::endl;
+  } else if (args[0] == "--version" || args[0] == "-v" ||
+             args[0] == "version") {
+    std::cout << "zap 0.0.2" << std::endl;
     return 0;
   }
 
@@ -108,6 +148,9 @@ int main(int argc, char *argv[]) {
     std::cerr << "could execute javascript: " << e.what() << std::endl;
     return 4;
   }
+
+  // vm.stash().get("strips").push();
+  // vm.dump();
 
   return 0;
 }

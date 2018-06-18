@@ -4,8 +4,8 @@
 #include <strips++/array.hpp>
 #include <strips++/converters.hpp>
 #include <strips++/function.hpp>
+#include <strips++/module-resolver.hpp>
 #include <strips++/object.hpp>
-//#include <strips++/builder.hpp>
 
 namespace strips {
 
@@ -104,6 +104,10 @@ public:
 
   void register_module(const std::string &name,
                        std::function<duk_ret_t(VM &vm)> fn);
+  void register_module(const std::string &name, const std::string &source);
+
+  void set_module_resolver(ModuleResolver *resolver) { resolver->push(ctx()); }
+  void set_module_parser(ModuleParser *parser) { parser->push(ctx()); };
 
   const VM &dump() const;
 
@@ -128,11 +132,13 @@ public:
   duk_ret_t call(duk_context *ctx) const override {
     VM vm(ctx);
     return m_fn(vm);
+    return 0;
   }
 
   duk_ret_t call(duk_context *ctx) override {
     VM vm(ctx);
     return m_fn(vm);
+    return 0;
   }
 
 private:
