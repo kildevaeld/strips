@@ -99,10 +99,8 @@ int main(int argc, char *argv[]) {
     return print_help(1);
   } else if (args[0] == "-h" || args[0] == "--help") {
     return print_help();
-  } /*else if (args[0][0] == '-') {
-    return print_help(1);
-  }*/
-  else if (args[0] == "--version" || args[0] == "-v" || args[0] == "version") {
+  } else if (args[0] == "--version" || args[0] == "-v" ||
+             args[0] == "version") {
     std::cout << "zap 0.0.2" << std::endl;
     return 0;
   }

@@ -182,9 +182,8 @@ static Type get_type(duk_context *ctx) {
     } else {
       return Type::Object;
     }
-    }
+  }
   default:
-
     return Type::Undefined;
   }
 }
@@ -197,6 +196,8 @@ Type Reference::type() const {
 }
 
 void Reference::set_ctx(duk_context *ctx) {
+  if (this->ctx == ctx)
+    return;
   set_ref(0);
   ptr->ctx = ctx;
 }
