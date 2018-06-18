@@ -17,7 +17,6 @@ class Any;
 class Function;
 
 void to_duktape(duk_context *ctx, std::function<duk_ret_t(VM &)> fn);
-// void to_duktape(duk_context *ctx, std::function<duk_ret_t(const VM &)> fn);
 
 void to_duktape(duk_context *ctx, const char *str);
 
@@ -76,7 +75,7 @@ void from_duktape(duk_context *ctx, duk_idx_t idx, std::vector<T> &v) {
     duk_get_prop_index(ctx, aidx, i);
     from_duktape(ctx, -1, a);
     duk_pop(ctx);
-    v.push_back(a);
+    v.push_back(std::move(a));
   }
 }
 

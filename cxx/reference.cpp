@@ -196,7 +196,7 @@ Type Reference::type() const {
 }
 
 void Reference::set_ctx(duk_context *ctx) {
-  if (this->ctx == ctx)
+  if (ptr->ctx == ctx)
     return;
   set_ref(0);
   ptr->ctx = ctx;

@@ -1,4 +1,3 @@
-//#include "object_p.hpp"
 #include <strips++/any.hpp>
 #include <strips++/callable.hpp>
 #include <strips++/converters.hpp>
@@ -32,58 +31,11 @@ void from_duktape(duk_context *ctx, duk_idx_t idx, std::string &str) {
   }
 }
 
-/*void to_duktape(duk_context *ctx, const bool &str) {
-  duk_push_boolean(ctx, str);
-}
-
-void from_duktape(duk_context *ctx, duk_idx_t idx, bool &str) {
-  if (duk_is_boolean(ctx, idx)) {
-    duk_bool_t s = duk_get_boolean(ctx, idx);
-    str = s;
-  }
-}*/
-
-struct fn_bag {
-  std::function<duk_ret_t(VM &)> fn;
-};
-
-static duk_ret_t fn_fin(duk_context *ctx) {
-  if (duk_has_prop_string(ctx, 0, DUK_HIDDEN_SYMBOL("bag"))) {
-    duk_get_prop_string(ctx, -0, DUK_HIDDEN_SYMBOL("bag"));
-    fn_bag *bag = (fn_bag *)duk_get_pointer(ctx, -1);
-    delete bag;
-  }
-  return 0;
-}
-
-static duk_ret_t fn_apply(duk_context *ctx) {
-  duk_push_current_function(ctx);
-  duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("bag"));
-  fn_bag *bag = (fn_bag *)duk_get_pointer(ctx, -1);
-  duk_pop_2(ctx);
-
-  VM strips(ctx);
-  duk_ret_t ret;
-  try {
-    ret = bag->fn(strips);
-  } catch (const std::runtime_error &e) {
-    duk_type_error(ctx, e.what());
-  } catch (...) {
-    duk_type_error(ctx, "unknon error");
-  }
-  return ret;
-}
-
 void to_duktape(duk_context *ctx, std::function<duk_ret_t(VM &)> fn) {
   auto *call =
       new details::Callable<std::function<duk_ret_t(VM &)>>(std::move(fn));
   call->push(ctx);
 }
-
-/*void to_duktape(duk_context *ctx, std::function<duk_ret_t(const VM &)> fn) {
-  auto *call = new details::Callable<std::function<duk_ret_t(const VM
-&)>>(std::move(fn)); call->push(ctx);
-}*/
 
 void to_duktape(duk_context *ctx, duk_c_function fn) {
   duk_push_c_function(ctx, fn, DUK_VARARGS);
