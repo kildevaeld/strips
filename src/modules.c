@@ -132,6 +132,16 @@ end:
   return ret;
 }
 
+duk_ret_t strips_unset_module_resolver(duk_context *ctx, const char *protocol) {
+  if (!strips_get_entry(ctx, "resolvers")) {
+    return false;
+  }
+
+  duk_del_prop_string(ctx, -1, protocol);
+  duk_pop(ctx);
+  return true;
+}
+
 bool strips_set_module_parser(duk_context *ctx, const char *ext,
                               duk_c_function fn) {
   if (!strips_get_entry(ctx, "parsers")) {

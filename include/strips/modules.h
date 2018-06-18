@@ -30,6 +30,8 @@ duk_ret_t strips_set_module_resolver(duk_context *ctx, const char *protocol,
                                      strips_module_resolve_cb resolve,
                                      strips_module_load_cb load);
 
+duk_ret_t strips_unset_module_resolver(duk_context *ctx, const char *protocol);
+
 bool strips_set_module_parser(duk_context *ctx, const char *ext,
                               duk_c_function fn);
 
