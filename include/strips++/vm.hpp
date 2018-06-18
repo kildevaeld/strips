@@ -130,13 +130,15 @@ class Callable<std::function<duk_ret_t(VM &vm)>> : public ::strips::Callable {
 public:
   Callable(std::function<duk_ret_t(VM &vm)> &&fn) : m_fn(std::move(fn)) {}
   duk_ret_t call(duk_context *ctx) const override {
-    VM vm(ctx);
-    return m_fn(vm);
+    // VM vm(ctx);
+    // return m_fn(vm);
+    return 0;
   }
 
   duk_ret_t call(duk_context *ctx) override {
-    VM vm(ctx);
-    return m_fn(vm);
+    // VM vm(ctx);
+    // return m_fn(vm);¨
+    return 0;
   }
 
 private:

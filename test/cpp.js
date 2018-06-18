@@ -8,4 +8,6 @@ console.log(test.name);
 
 test.call();*/
 
-require('weed://testmig');
+const out = require('weed://testmig');
+
+console.log(out);

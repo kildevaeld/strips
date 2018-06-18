@@ -1,7 +1,7 @@
 #pragma once
 #include <duktape.h>
 //#include <strips++/vm.hpp>
-#include <iostream>
+
 namespace strips {
 
 class Callable {
@@ -39,14 +39,14 @@ public:
     duk_push_current_function(ctx);
     duk_get_prop_string(ctx, -1, DUK_HIDDEN_SYMBOL("fn"));
     Callable *call = reinterpret_cast<Callable *>(duk_get_pointer(ctx, -1));
-    std::cout << "call " << (call != nullptr);
+
     duk_pop_2(ctx);
     duk_ret_t ret;
-    /*try {
+    try {
       ret = call->call(ctx);
     } catch (const std::runtime_error &e) {
       duk_type_error(ctx, "could error: %s", e.what());
-    }*/
+    }
     return ret;
   }
 };
@@ -58,12 +58,12 @@ template <typename T> class Callable : public ::strips::Callable {
 public:
   Callable(T &&fn) : m_fn(std::move(fn)) {}
   duk_ret_t call(duk_context *vm) const {
-    // return m_fn(vm);
+    return m_fn(vm);
     return 0;
   }
 
   duk_ret_t call(duk_context *vm) {
-    // return m_fn(vm);
+    return m_fn(vm);
     return 0;
   }
 
