@@ -9,5 +9,5 @@ console.log(test.name);
 test.call();*/
 
 const out = require('weed://testmig');
-
-console.log(out);
+const txt = require('weed://text.txt');
+console.log(out, txt);

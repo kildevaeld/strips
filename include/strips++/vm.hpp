@@ -108,6 +108,7 @@ public:
   void register_module(const std::string &name, const std::string &source);
 
   void set_module_resolver(ModuleResolver *resolver) { resolver->push(ctx()); }
+  void set_module_parser(ModuleParser *parser) { parser->push(ctx()); };
 
   const VM &dump() const;
 

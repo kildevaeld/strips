@@ -27,10 +27,6 @@ void to_duktape(duk_context *ctx, const std::string &str);
 
 void from_duktape(duk_context *ctx, duk_idx_t idx, std::string &str);
 
-// void to_duktape(duk_context *ctx, const bool &str);
-
-// void from_duktape(duk_context *ctx, duk_idx_t idx, bool &str);
-
 template <class T,
           typename std::enable_if<std::is_integral<T>::value>::type * = nullptr>
 void to_duktape(duk_context *ctx, const T &v) {

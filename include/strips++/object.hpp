@@ -140,11 +140,6 @@ public:
     duk_pop(ctx());
   }
 
-  /*void set_finalizer(Callback cb) {
-    push();
-    to_duktape(ctx(), cb);
-  }*/
-
   template <typename T = Reference, typename... Args>
   T call(const std::string &prop, const Args &... args) {
 

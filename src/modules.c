@@ -145,7 +145,8 @@ bool strips_set_module_parser(duk_context *ctx, const char *ext,
     goto end;
   }
 
-  duk_push_c_lightfunc(ctx, fn, 2, 2, 0);
+  duk_push_c_function(ctx, fn, 2);
+  // duk_push_c_lightfunc(ctx, fn, 2, 2, 0);
   duk_put_prop_string(ctx, -2, ext);
 
 end:

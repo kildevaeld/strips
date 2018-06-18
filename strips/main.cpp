@@ -1,5 +1,4 @@
 #include <iostream>
-#include <strips++/value.hpp>
 #include <strips++/vm.hpp>
 #include <strips/curl/curl.h>
 #include <strips/exec/exec.h>
@@ -26,6 +25,8 @@ public:
     std::vector<std::string> list;
     if (id == "testmig") {
       list.push_back("hello.js");
+    } else if (id == "text.txt") {
+      list.push_back("text.txt");
     }
 
     return list;
@@ -36,10 +37,23 @@ public:
     ModuleResolverLoadResult result;
 
     for (auto a : files) {
-      result.emplace_back(a, "exports.test = 'Hello world'");
+      if (a == "text.txt")
+        result.emplace_back(a, "Hello, World");
+      else
+        result.emplace_back(a, "exports.test = 'Hello world'");
     }
 
     return std::move(result);
+  }
+};
+
+class MP : public ModuleParser {
+
+public:
+  MP() {}
+  virtual std::string extension() const { return ".txt"; }
+  virtual void parse(const Object &module, const std::string &content) const {
+    module.set("exports", content);
   }
 };
 
@@ -74,6 +88,7 @@ static void init_vm(VM &vm, int argc, char **argv) {
 
   vm.register_module("cpp", Factory());
   vm.set_module_resolver(new Mo());
+  vm.set_module_parser(new MP());
 }
 
 int main(int argc, char *argv[]) {
@@ -135,6 +150,9 @@ int main(int argc, char *argv[]) {
     std::cerr << "could execute javascript: " << e.what() << std::endl;
     return 4;
   }
+
+  // vm.stash().get("strips").push();
+  // vm.dump();
 
   return 0;
 }
