@@ -109,6 +109,12 @@ void from_duktape(duk_context *ctx, duk_idx_t idx, Object &o) {
   o.set_ref(duk_ref(ctx));
 }
 
+void from_duktape(duk_context *ctx, duk_idx_t idx, Array &o) {
+  duk_dup(ctx, idx);
+  o.set_ctx(ctx);
+  o.set_ref(duk_ref(ctx));
+}
+
 void to_duktape(duk_context *ctx, const Reference &o) { o.push(); }
 
 void from_duktape(duk_context *ctx, duk_idx_t idx, Reference &o) {

@@ -4,6 +4,7 @@
 #include <strips++/array.hpp>
 #include <strips++/converters.hpp>
 #include <strips++/function.hpp>
+#include <strips++/module-resolver.hpp>
 #include <strips++/object.hpp>
 //#include <strips++/builder.hpp>
 
@@ -104,6 +105,9 @@ public:
 
   void register_module(const std::string &name,
                        std::function<duk_ret_t(VM &vm)> fn);
+  void register_module(const std::string &name, const std::string &source);
+
+  void set_module_resolver(ModuleResolver *resolver) { resolver->push(ctx()); }
 
   const VM &dump() const;
 

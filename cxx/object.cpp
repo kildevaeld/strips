@@ -70,6 +70,7 @@ std::vector<std::string> Object::keys() const {
 void Object::set_finalizer(std::function<duk_ret_t(VM &vm)> fn) {
   push();
   to_duktape(ctx(), fn);
+
   duk_set_finalizer(ctx(), -2);
   duk_pop(ctx());
 }

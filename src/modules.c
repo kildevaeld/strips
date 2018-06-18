@@ -27,18 +27,8 @@ strips_ret_t duk_module_add_fn_idx(duk_context *ctx, const char *name,
 strips_ret_t duk_module_add_fn(duk_context *ctx, const char *name,
                                duk_c_function fn) {
 
-  /*if (!strips_get_entry(ctx, "modules")) {
-    return STRIPS_NOT_INITIALIZED;
-  }
-
-  if (duk_has_prop_string(ctx, -1, name)) {
-    duk_pop(ctx);
-    return STRIPS_DUPLICATE_MODULE;
-  }*/
-
   duk_idx_t idx = duk_push_c_lightfunc(ctx, fn, 0, 0, 0);
   duk_module_add_fn_idx(ctx, name, idx);
-  // duk_put_prop_string(ctx, -2, name);
 
   duk_pop(ctx);
 

@@ -90,6 +90,31 @@ public:
     duk_pop(ctx());
   }
 
+  void set_ptr(const std::string &name, void *ptr) const {
+    push();
+    duk_push_pointer(ctx(), ptr);
+    auto key = std::string("\xFF") + name;
+    duk_put_prop_string(ctx(), -2, key.c_str());
+    duk_pop(ctx());
+  }
+
+  void *get_ptr(const std::string &name) const {
+    auto key = std::string("\xFF") + name;
+    push();
+    if (!duk_has_prop_string(ctx(), -1, key.c_str())) {
+      duk_pop(ctx());
+      return nullptr;
+    }
+    duk_get_prop_string(ctx(), -1, key.c_str());
+    void *ptr = duk_get_pointer(ctx(), -1);
+    duk_pop_2(ctx());
+    return ptr;
+  }
+
+  template <class T> void set_hidden(const std::string &name, const T &v) {
+    set<T>(std::string("\xFF") + name, v);
+  }
+
   template <class T = Reference> T get(const std::string &name) const {
     push();
     T v;
@@ -98,9 +123,15 @@ public:
     }
 
     duk_get_prop_string(ctx(), -1, name.c_str());
+
     from_duktape(ctx(), -1, v);
+
     duk_pop_2(ctx());
     return std::move(v);
+  }
+
+  template <class T = Reference> T get_hidden(const std::string &name) const {
+    return get<T>(std::string("\xFF") + name);
   }
 
   template <class T = Reference> T del(const std::string &name) const {

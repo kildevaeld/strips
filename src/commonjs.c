@@ -298,7 +298,7 @@ static duk_ret_t strips__resolve_module(duk_context *ctx, void *udata) {
   duk_dup(ctx, -4);
 
   if (require_type_check(ctx, "protocol")) {
-    printf("is protocol");
+
   } else if (require_type_check(ctx, "file")) {
 
     if (!sy_path_is_abs(module_id)) {

@@ -11,6 +11,7 @@ namespace strips {
 
 class VM;
 class Object;
+class Array;
 class Reference;
 class Any;
 class Function;
@@ -125,6 +126,7 @@ void to_duktape(duk_context *ctx, const std::map<std::string, Any> &v);
 
 void to_duktape(duk_context *ctx, const Object &o);
 void from_duktape(duk_context *ctx, duk_idx_t idx, Object &o);
+void from_duktape(duk_context *ctx, duk_idx_t idx, Array &o);
 
 void to_duktape(duk_context *ctx, const Reference &o);
 void from_duktape(duk_context *ctx, duk_idx_t idx, Reference &o);
