@@ -5,6 +5,7 @@
 namespace strips {
 
 class Reference;
+class Object;
 
 class ModuleParser {
 

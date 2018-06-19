@@ -73,6 +73,7 @@ void ModuleResolver::push(duk_context *ctx) {
 }
 
 duk_ret_t ModuleResolver::native_resolve(duk_context *ctx) {
+
   duk_push_global_stash(ctx);
   Object stash(ctx, -1);
   duk_pop(ctx);
@@ -88,6 +89,7 @@ duk_ret_t ModuleResolver::native_resolve(duk_context *ctx) {
 
   auto id = module.get<std::string>("id");
   id = id.substr(protocol.size() + 3);
+
   auto files = ptr->resolve(id, module.get<std::string>("parent"));
 
   module.set("files", files);
