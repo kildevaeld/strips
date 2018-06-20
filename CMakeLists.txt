@@ -18,7 +18,7 @@ find_package(syrup-term REQUIRED)
 find_package(syrup-path REQUIRED)
 
 include_directories(
-    include 
+    #include 
     #vendor/duktape-2.2.1/src
     #vendor/syrup-path/include
     #vendor/syrup-term/include
