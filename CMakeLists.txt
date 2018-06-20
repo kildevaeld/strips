@@ -13,6 +13,9 @@ if(UNIX AND NOT APPLE)
 endif()
 
 find_package(duktape REQUIRED)
+find_package(syrup-fs REQUIRED)
+find_package(syrup-term REQUIRED)
+find_package(syrup-path REQUIRED)
 
 include_directories(
     include 
@@ -36,9 +39,10 @@ if (STRIPS_BUILD_CXX)
 endif(STRIPS_BUILD_CXX)
 
 
-add_subdirectory(vendor/syrup-path)
-add_subdirectory(vendor/syrup-term)
-add_subdirectory(vendor/syrup-fs)
+
+#add_subdirectory(vendor/syrup-path)
+#add_subdirectory(vendor/syrup-term)
+#add_subdirectory(vendor/syrup-fs)
 add_subdirectory(src)
 
 

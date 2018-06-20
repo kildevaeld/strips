@@ -28,9 +28,20 @@ set(SOURCES
 )
 
 add_library(strips ${SOURCES})
-target_link_libraries(strips syrup-path syrup-term syrup-fs ${DUKTAPE_LIBRARIES})
+target_link_libraries(strips 
+    ${DUKTAPE_LIBRARIES} 
+    ${SYRUP_FS_LIBRARIES} 
+    ${SYRUP_TERM_LIBRARIES} 
+    ${SYRUP_PATH_LIBRARIES}
+)
+
 target_include_directories(strips 
-    PUBLIC ${PROJECT_SOURCE_DIR}/include ${DUKTAPE_INCLUDE_DIRS})
+    PUBLIC ${PROJECT_SOURCE_DIR}/include 
+    PUBLIC ${DUKTAPE_INCLUDE_DIRS} 
+    PUBLIC ${SYRUP_FS_INCLUDE_DIRS} 
+    PUBLIC ${SYRUP_PATH_INCLUDE_DIRS} 
+    PUBLIC ${SYRUP_TERM_INCLUDE_DIRS}
+)
 
 if(APPLE)
     target_compile_definitions(strips PRIVATE CS_DLL_EXTENSION=".dylib")
