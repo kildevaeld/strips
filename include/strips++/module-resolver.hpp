@@ -1,6 +1,7 @@
 #pragma once
 #include <duktape.h>
 #include <string>
+#include <vector>
 
 namespace strips {
 

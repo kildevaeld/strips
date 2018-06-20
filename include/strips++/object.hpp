@@ -177,7 +177,7 @@ public:
     int size = 0;
     iterate_vaargs(
         [&](auto &arg) {
-          to_duktape(ctx(), arg);
+          to_duktape(this->ctx(), arg);
           size++;
         },
         args...);
