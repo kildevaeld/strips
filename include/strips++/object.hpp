@@ -77,10 +77,27 @@ public:
     std::pair<std::string, Reference> m_current;
   };
 
+  Object();
   Object(duk_context *ctx);
   Object(duk_context *ctx, duk_idx_t idx);
   Object(const Object &);
   Object(Object &&);
+  // Object &operator=(const Object &other) {
+  //   if (this != &other) {
+  //     other.push();
+  //     set_ctx(other.ctx());
+  //     set_ref(duk_ref(ctx()));
+  //   }
+  //   return *this;
+  // }
+
+  Object &operator=(Object &&other) {
+    if (this != &other) {
+      this->ptr.swap(other.ptr);
+    }
+    return *this;
+  }
+
   virtual ~Object();
 
   template <class T> void set(const std::string &name, const T &v) const {
@@ -140,6 +157,17 @@ public:
     duk_pop(ctx());
   }
 
+  Object proxy(const Object &object) {
+    push();
+    object.push();
+    duk_push_proxy(ctx(), 0);
+
+    Object proxy(ctx(), -1);
+    duk_pop(ctx());
+
+    return std::move(proxy);
+  }
+
   template <typename T = Reference, typename... Args>
   T call(const std::string &prop, const Args &... args) {
 
@@ -196,7 +224,7 @@ private:
   friend class Value;
   friend class Function;
   friend void from_duktape(duk_context *ctx, duk_idx_t idx, Object &o);
-  Object();
+  // Object();
 
 }; // namespace strips
 

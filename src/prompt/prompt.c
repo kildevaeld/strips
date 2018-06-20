@@ -122,11 +122,23 @@ static duk_ret_t de_prompt_list(duk_context *ctx) {
     return 0;
   }
 
-  duk_push_array(ctx);
-  for (int i = 0; i < res->len; i++) {
-    duk_push_string(ctx, (const char *)sy_array_get(choices, res->indexes[i]));
-    duk_put_prop_index(ctx, -2, i);
+  if (cfg.max_selected <= 1) {
+    if (res->len > 0) {
+      duk_push_string(ctx,
+                      (const char *)sy_array_get(choices, res->indexes[0]));
+    } else {
+      duk_push_null(ctx);
+    }
+    return 1;
+  } else {
+    duk_push_array(ctx);
+    for (int i = 0; i < res->len; i++) {
+      duk_push_string(ctx,
+                      (const char *)sy_array_get(choices, res->indexes[i]));
+      duk_put_prop_index(ctx, -2, i);
+    }
   }
+
   sy_array_free(choices);
   sy_term_list_res_free(res);
 

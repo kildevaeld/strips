@@ -72,7 +72,7 @@ public:
     return *this;
   }
 
-  template <class T = Reference> T get(duk_idx_t idx = -1) const {
+    template <class T = Reference> T get(duk_idx_t idx = -1) const {
     T v;
     from_duktape(ctx(), idx, v);
     return std::move(v);
