@@ -12,13 +12,15 @@ if(UNIX AND NOT APPLE)
     set(LINUX TRUE)
 endif()
 
+find_package(duktape REQUIRED)
+
 include_directories(
     include 
-    vendor/duktape-2.2.1/src
-    vendor/syrup-path/include
-    vendor/syrup-term/include
-    vendor/syrup-fs/include
-    vendor/syrup-term/vendor/syrup-buffer/include
+    #vendor/duktape-2.2.1/src
+    #vendor/syrup-path/include
+    #vendor/syrup-term/include
+    #vendor/syrup-fs/include
+    #vendor/syrup-term/vendor/syrup-buffer/include
     vendor/which
 )
 
@@ -59,3 +61,4 @@ if (STRIPS_BUILD_TEST)
     add_subdirectory(vendor/unity)
     add_subdirectory(test)
 endif(STRIPS_BUILD_TEST)
+
