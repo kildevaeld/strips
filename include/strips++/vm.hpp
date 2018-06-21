@@ -72,10 +72,20 @@ public:
     return *this;
   }
 
-    template <class T = Reference> T get(duk_idx_t idx = -1) const {
+  template <class T = Reference> T get(duk_idx_t idx = -1) const {
     T v;
     from_duktape(ctx(), idx, v);
     return std::move(v);
+  }
+
+  template <Type tmp> bool is(duk_idx_t idx) const {
+    auto ref = get<Reference>(idx);
+    return ref.is<tmp>();
+  }
+
+  template <class T> Type type(duk_idx_t idx) const {
+    auto ref = get<Reference>(idx);
+    return ref.type();
   }
 
   template <class T> T pop() {
