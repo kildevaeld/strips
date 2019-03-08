@@ -100,7 +100,7 @@ static duk_ret_t duk__parse_json(duk_context *ctx) {
   return 0;
 }
 
-//#region Cache
+#pragma region Cache
 
 static duk_bool_t strips__get_cached_module(duk_context *ctx, const char *id) {
   duk_push_global_stash(ctx);
